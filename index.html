@@ -1,0 +1,4676 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheel ABC - Roleta de Perguntas</title>
+  <!-- Carrega o Tailwind CSS -->
+  <script src="https://cdn-tailwindcss.vercel.app/"></script>
+  <style>
+    /* Define a fonte Inter como padrão, conforme solicitado */
+    html, body {
+      font-family: 'Inter', sans-serif;
+      /* Garante que o gradiente cubra toda a tela */
+      min-height: 100vh;
+    }
+    
+    /* Animação do modal */
+    @keyframes bounce-in {
+      0% {
+        transform: scale(0) translateY(-200px);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1) translateY(0);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      animation: bounce-in 0.6s ease-out;
+    }
+
+    /* Animação do menu lateral */
+    .sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar.closed {
+      transform: translateX(100%);
+      visibility: hidden;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+      visibility: visible;
+    }
+    
+    /* Animação de fumaça realista */
+    @keyframes smoke-1 {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.8);
+        opacity: 0.7;
+      }
+      25% {
+        transform: translateY(-8px) translateX(3px) rotate(15deg) scale(1.1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translateY(-18px) translateX(8px) rotate(30deg) scale(1.4);
+        opacity: 0.4;
+      }
+      75% {
+        transform: translateY(-30px) translateX(12px) rotate(45deg) scale(1.8);
+        opacity: 0.2;
+      }
+      100% {
+        transform: translateY(-45px) translateX(15px) rotate(60deg) scale(2.2);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes smoke-2 {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.7);
+        opacity: 0.65;
+      }
+      25% {
+        transform: translateY(-10px) translateX(-4px) rotate(-20deg) scale(1.0);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-22px) translateX(-9px) rotate(-35deg) scale(1.5);
+        opacity: 0.35;
+      }
+      75% {
+        transform: translateY(-35px) translateX(-14px) rotate(-50deg) scale(2.0);
+        opacity: 0.15;
+      }
+      100% {
+        transform: translateY(-50px) translateX(-18px) rotate(-65deg) scale(2.5);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes smoke-3 {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.9);
+        opacity: 0.6;
+      }
+      25% {
+        transform: translateY(-12px) translateX(5px) rotate(25deg) scale(1.2);
+        opacity: 0.45;
+      }
+      50% {
+        transform: translateY(-25px) translateX(10px) rotate(40deg) scale(1.6);
+        opacity: 0.3;
+      }
+      75% {
+        transform: translateY(-40px) translateX(15px) rotate(55deg) scale(2.1);
+        opacity: 0.15;
+      }
+      100% {
+        transform: translateY(-55px) translateX(20px) rotate(70deg) scale(2.6);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes smoke-4 {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.6);
+        opacity: 0.55;
+      }
+      25% {
+        transform: translateY(-9px) translateX(-2px) rotate(-15deg) scale(0.95);
+        opacity: 0.4;
+      }
+      50% {
+        transform: translateY(-20px) translateX(-6px) rotate(-30deg) scale(1.3);
+        opacity: 0.25;
+      }
+      75% {
+        transform: translateY(-33px) translateX(-11px) rotate(-45deg) scale(1.7);
+        opacity: 0.1;
+      }
+      100% {
+        transform: translateY(-48px) translateX(-16px) rotate(-60deg) scale(2.2);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes smoke-5 {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.85);
+        opacity: 0.65;
+      }
+      25% {
+        transform: translateY(-11px) translateX(4px) rotate(20deg) scale(1.15);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-24px) translateX(9px) rotate(35deg) scale(1.55);
+        opacity: 0.35;
+      }
+      75% {
+        transform: translateY(-38px) translateX(14px) rotate(50deg) scale(2.0);
+        opacity: 0.18;
+      }
+      100% {
+        transform: translateY(-52px) translateX(19px) rotate(65deg) scale(2.5);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes smoke-6 {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) scale(0.75);
+        opacity: 0.6;
+      }
+      25% {
+        transform: translateY(-7px) translateX(-3px) rotate(-18deg) scale(1.05);
+        opacity: 0.45;
+      }
+      50% {
+        transform: translateY(-16px) translateX(-7px) rotate(-32deg) scale(1.4);
+        opacity: 0.3;
+      }
+      75% {
+        transform: translateY(-28px) translateX(-12px) rotate(-47deg) scale(1.85);
+        opacity: 0.15;
+      }
+      100% {
+        transform: translateY(-42px) translateX(-17px) rotate(-62deg) scale(2.3);
+        opacity: 0;
+      }
+    }
+    
+    /* Aplica animações às partículas de fumaça */
+    #smoke-car-1 circle:nth-child(1),
+    #smoke-car-2 circle:nth-child(1) {
+      animation: smoke-1 2.5s ease-out infinite;
+    }
+    
+    #smoke-car-1 circle:nth-child(2),
+    #smoke-car-2 circle:nth-child(2) {
+      animation: smoke-2 2.8s ease-out infinite;
+      animation-delay: 0.2s;
+    }
+    
+    #smoke-car-1 circle:nth-child(3),
+    #smoke-car-2 circle:nth-child(3) {
+      animation: smoke-3 3s ease-out infinite;
+      animation-delay: 0.4s;
+    }
+    
+    #smoke-car-1 circle:nth-child(4),
+    #smoke-car-2 circle:nth-child(4) {
+      animation: smoke-4 2.6s ease-out infinite;
+      animation-delay: 0.1s;
+    }
+    
+    #smoke-car-1 circle:nth-child(5),
+    #smoke-car-2 circle:nth-child(5) {
+      animation: smoke-5 2.9s ease-out infinite;
+      animation-delay: 0.3s;
+    }
+    
+    #smoke-car-1 circle:nth-child(6),
+    #smoke-car-2 circle:nth-child(6) {
+      animation: smoke-6 3.1s ease-out infinite;
+      animation-delay: 0.5s;
+    }
+    
+    /* Animação de movimento do carro - usando scale ao invés de translateY para não interferir */
+    @keyframes car-bounce {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.02);
+      }
+    }
+    
+    /* A animação de bounce será aplicada apenas quando não estiver em movimento */
+    #race-car-1 svg, #race-car-2 svg {
+      animation: car-bounce 0.5s ease-in-out infinite;
+    }
+
+    /* Estilos para Modais Customizados */
+    .custom-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .custom-modal:not(.hidden) {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .custom-modal.hidden {
+      display: none;
+    }
+
+    .custom-modal-content {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 90%;
+      width: 100%;
+      max-width: 500px;
+      transform: scale(0.7) translateY(-50px);
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .custom-modal-content-large {
+      max-width: 600px;
+    }
+
+    .custom-modal:not(.hidden) .custom-modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .custom-modal-header {
+      background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .custom-modal-header h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .custom-modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 28px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+      line-height: 1;
+    }
+
+    .custom-modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .custom-modal-body {
+      padding: 24px;
+      color: #374151;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .custom-modal-body p {
+      margin: 0;
+    }
+
+    .custom-modal-footer {
+      padding: 16px 24px 24px;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .custom-modal-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 100px;
+    }
+
+    .custom-modal-btn-primary {
+      background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+      color: white;
+    }
+
+    .custom-modal-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+    }
+
+    .custom-modal-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .custom-modal-btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .custom-modal-btn-secondary:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+    }
+
+    .custom-modal-btn-secondary:active {
+      transform: translateY(0);
+    }
+
+    .custom-prompt-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+    }
+
+    .custom-prompt-input:focus {
+      border-color: #9333ea;
+      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+    }
+
+    @media (max-width: 640px) {
+      .custom-modal-content {
+        max-width: 95%;
+        margin: 20px;
+      }
+
+      .custom-modal-header {
+        padding: 16px 20px;
+      }
+
+      .custom-modal-header h3 {
+        font-size: 1.25rem;
+      }
+
+      .custom-modal-body {
+        padding: 20px;
+        font-size: 1rem;
+      }
+
+      .custom-modal-footer {
+        padding: 12px 20px 20px;
+        flex-direction: column;
+      }
+
+      .custom-modal-btn {
+        width: 100%;
+      }
+    }
+
+    /* Estilo infantil e animado para o título Wheel ABC */
+    @keyframes bounce-kids {
+      0%, 100% { 
+        transform: translateY(0) scale(1);
+      }
+      50% { 
+        transform: translateY(-10px) scale(1.05);
+      }
+    }
+
+    @keyframes rainbow-flow {
+      0% { 
+        background-position: 0% 50%;
+      }
+      50% { 
+        background-position: 100% 50%;
+      }
+      100% { 
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { 
+        opacity: 0.6;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+
+    .game-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(
+        90deg,
+        #ff6b6b,
+        #4ecdc4,
+        #ffe66d,
+        #ff6b6b,
+        #4ecdc4,
+        #ffe66d,
+        #ff6b6b
+      );
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: 
+        bounce-kids 1.5s ease-in-out infinite,
+        rainbow-flow 4s ease infinite;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+    }
+
+    .game-title::before {
+      content: '🎈';
+      position: absolute;
+      left: -50px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: wiggle 2s ease-in-out infinite;
+      font-size: 2rem;
+    }
+
+    .game-title::after {
+      content: '⭐';
+      position: absolute;
+      right: -50px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: sparkle 1.5s ease-in-out infinite;
+      font-size: 2rem;
+    }
+
+    @media (max-width: 640px) {
+      .game-title {
+        font-size: 1.75rem;
+      }
+      .game-title::before,
+      .game-title::after {
+        font-size: 1.5rem;
+        left: -35px;
+        right: -35px;
+      }
+    }
+
+    /* Previne que palavras sejam cortadas nos containers dos jogos - versão simplificada */
+    #race-game-container .bg-white,
+    #force-game-container .bg-white,
+    #word-game-container .bg-white {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Garante que textos longos possam quebrar linha */
+    #race-game-container p,
+    #force-game-container p,
+    #word-game-container p,
+    #race-game-container span,
+    #force-game-container span,
+    #word-game-container span {
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    /* Animações de Vitória - Balões */
+    @keyframes balloon-float {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 1;
+      }
+      50% {
+        transform: translateX(var(--drift-x, 20px)) rotate(var(--drift-rot, 5deg));
+      }
+      100% {
+        transform: translateY(-100vh) translateX(var(--drift-x, 20px)) rotate(var(--drift-rot, 5deg));
+        opacity: 0;
+      }
+    }
+
+    .balloon {
+      position: fixed;
+      width: 50px;
+      height: 65px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: balloon-float 8s ease-out forwards;
+      z-index: 9999;
+      pointer-events: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .balloon::before {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
+    }
+
+    /* Animações de Vitória - Fogos de Artifício */
+    @keyframes firework {
+      0% {
+        transform: translate(var(--x), var(--initial-y));
+        width: var(--initial-size);
+        opacity: 1;
+      }
+      50% {
+        width: 0.5vmin;
+        opacity: 1;
+      }
+      100% {
+        width: var(--final-size);
+        opacity: 0;
+        transform: translate(var(--x), var(--y));
+      }
+    }
+
+    .firework,
+    .firework::before,
+    .firework::after {
+      --initial-size: 0.5vmin;
+      --final-size: 50vmin;
+      --particle-size: 0.2vmin;
+      --color1: yellow;
+      --color2: khaki;
+      --color3: white;
+      --color4: lime;
+      --color5: gold;
+      --y: -30vmin;
+      --x: -50%;
+      --initial-y: 60vmin;
+      content: '';
+      animation: firework 2s infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, var(--y));
+      width: var(--initial-size);
+      aspect-ratio: 1;
+      background: 
+        /*
+        * To create the 3D sphere effect, we use multiple
+        * radial gradients at different positions to create
+        * the illusion of depth
+        */
+        /*
+        * 1. Create a base layer of particles
+        */
+        radial-gradient(circle, var(--color1) var(--particle-size), #0000 0) 0% 0%,
+        radial-gradient(circle, var(--color1) var(--particle-size), #0000 0) 100% 0%,
+        radial-gradient(circle, var(--color1) var(--particle-size), #0000 0) 100% 100%,
+        radial-gradient(circle, var(--color1) var(--particle-size), #0000 0) 0% 100%,
+        /*
+        * 2. Add a second layer of particles with different colors
+        */
+        radial-gradient(circle, var(--color2) var(--particle-size), #0000 0) 50% 0%,
+        radial-gradient(circle, var(--color3) var(--particle-size), #0000 0) 100% 50%,
+        radial-gradient(circle, var(--color4) var(--particle-size), #0000 0) 50% 100%,
+        radial-gradient(circle, var(--color5) var(--particle-size), #0000 0) 0% 50%,
+        /*
+        * 3. Add a third layer to create more depth
+        */
+        radial-gradient(circle, var(--color1) var(--particle-size), #0000 0) 80% 20%,
+        radial-gradient(circle, var(--color2) var(--particle-size), #0000 0) 20% 80%,
+        radial-gradient(circle, var(--color3) var(--particle-size), #0000 0) 80% 80%,
+        radial-gradient(circle, var(--color4) var(--particle-size), #0000 0) 20% 20%;
+      background-size: var(--initial-size) var(--initial-size);
+      background-repeat: no-repeat;
+    }
+
+    .firework::before {
+      --x: -50%;
+      --y: -50%;
+      --initial-y: -50%;
+      /*   Creating a second firework effect  */
+      transform: translate(-20vmin, -2vmin) rotate(40deg) scale(1.3) rotateY(40deg);
+      /*   animation: fireworkPseudo 2s infinite; */
+    }
+
+    .firework::after {
+      --x: -50%;
+      --y: -50%;
+      --initial-y: -50%;
+      /*   Creating a third firework effect  */
+      transform: translate(44vmin, -50%) rotate(170deg) scale(1.15) rotateY(-30deg);
+      /*   animation: fireworkPseudo 2s infinite; */
+    }
+
+    .firework:nth-of-type(2) {
+      --x: -30vmin;
+    }
+
+    .firework:nth-of-type(2),
+    .firework:nth-of-type(2)::before,
+    .firework:nth-of-type(2)::after {
+      --color1: pink;
+      --color2: violet;
+      --color3: fuchsia;
+      --final-size: 40vmin;
+      left: 30%;
+      animation-delay: -0.25s;
+    }
+
+    .firework:nth-of-type(3) {
+      --x: 30vmin;
+    }
+
+    .firework:nth-of-type(3),
+    .firework:nth-of-type(3)::before,
+    .firework:nth-of-type(3)::after {
+      --color1: cyan;
+      --color2: lightblue;
+      --color3: lightcyan;
+      --final-size: 35vmin;
+      left: 70%;
+      animation-delay: -0.4s;
+    }
+
+    /* Animações de Vitória - Confetes */
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--confetti-color);
+      animation: confetti-fall 3s linear forwards;
+      z-index: 9998;
+      pointer-events: none;
+    }
+
+    .confetti:nth-child(odd) {
+      border-radius: 50%;
+    }
+
+    .confetti:nth-child(even) {
+      width: 8px;
+      height: 20px;
+    }
+
+    /* Container de efeitos de vitória */
+    #victory-effects {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9997;
+      overflow: hidden;
+    }
+
+    /* Animação de Texto de Vitória */
+    @keyframes victory-text-pop {
+      0% {
+        transform: scale(0) rotate(-10deg);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2) rotate(5deg);
+        opacity: 1;
+      }
+      70% {
+        transform: scale(0.95) rotate(-2deg);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes victory-text-glow {
+      0%, 100% {
+        text-shadow: 
+          0 0 10px rgba(255, 215, 0, 0.8),
+          0 0 20px rgba(255, 215, 0, 0.6),
+          0 0 30px rgba(255, 215, 0, 0.4),
+          0 0 40px rgba(255, 215, 0, 0.2);
+      }
+      50% {
+        text-shadow: 
+          0 0 20px rgba(255, 215, 0, 1),
+          0 0 30px rgba(255, 215, 0, 0.8),
+          0 0 40px rgba(255, 215, 0, 0.6),
+          0 0 50px rgba(255, 215, 0, 0.4),
+          0 0 60px rgba(255, 215, 0, 0.2);
+      }
+    }
+
+    @keyframes victory-text-float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    .victory-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 4rem;
+      font-weight: bold;
+      color: #FFD700;
+      text-align: center;
+      z-index: 10000;
+      pointer-events: none;
+      animation: 
+        victory-text-pop 0.8s ease-out,
+        victory-text-glow 2s ease-in-out infinite 0.8s,
+        victory-text-float 3s ease-in-out infinite 2s;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (max-width: 768px) {
+      .victory-text {
+        font-size: 2.5rem;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .victory-text {
+        font-size: 2rem;
+        letter-spacing: 0.03em;
+      }
+    }
+
+    /* Animações de Derrota */
+    @keyframes defeat-text-shake {
+      0%, 100% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      10% {
+        transform: translate(-50%, -50%) rotate(-3deg);
+      }
+      20% {
+        transform: translate(-50%, -50%) rotate(3deg);
+      }
+      30% {
+        transform: translate(-50%, -50%) rotate(-3deg);
+      }
+      40% {
+        transform: translate(-50%, -50%) rotate(3deg);
+      }
+      50% {
+        transform: translate(-50%, -50%) rotate(-2deg);
+      }
+      60% {
+        transform: translate(-50%, -50%) rotate(2deg);
+      }
+      70% {
+        transform: translate(-50%, -50%) rotate(-1deg);
+      }
+      80% {
+        transform: translate(-50%, -50%) rotate(1deg);
+      }
+      90% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+    }
+
+    @keyframes defeat-text-fade-in {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes defeat-text-glow {
+      0%, 100% {
+        text-shadow: 
+          0 0 10px rgba(220, 20, 60, 0.8),
+          0 0 20px rgba(220, 20, 60, 0.6),
+          0 0 30px rgba(220, 20, 60, 0.4),
+          0 0 40px rgba(139, 0, 0, 0.3);
+      }
+      50% {
+        text-shadow: 
+          0 0 20px rgba(220, 20, 60, 1),
+          0 0 30px rgba(220, 20, 60, 0.8),
+          0 0 40px rgba(220, 20, 60, 0.6),
+          0 0 50px rgba(139, 0, 0, 0.5),
+          0 0 60px rgba(139, 0, 0, 0.3);
+      }
+    }
+
+    @keyframes defeat-overlay {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 0.3;
+      }
+    }
+
+    @keyframes defeat-lightning {
+      0%, 90%, 100% {
+        opacity: 0;
+      }
+      5%, 10% {
+        opacity: 1;
+      }
+      15%, 20% {
+        opacity: 0.3;
+      }
+    }
+
+    .defeat-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 4rem;
+      font-weight: bold;
+      color: #DC143C;
+      text-align: center;
+      z-index: 10000;
+      pointer-events: none;
+      animation: 
+        defeat-text-fade-in 0.5s ease-out,
+        defeat-text-shake 0.8s ease-in-out 0.5s,
+        defeat-text-glow 2s ease-in-out infinite 1.3s;
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .defeat-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.8) 100%);
+      z-index: 9998;
+      pointer-events: none;
+      animation: defeat-overlay 0.5s ease-out;
+    }
+
+    .defeat-lightning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 25%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.1) 75%,
+        transparent 100%
+      );
+      z-index: 9999;
+      pointer-events: none;
+      animation: defeat-lightning 2s ease-in-out infinite;
+      transform: skewX(-20deg);
+    }
+
+    @media (max-width: 768px) {
+      .defeat-text {
+        font-size: 2.5rem;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .defeat-text {
+        font-size: 2rem;
+        letter-spacing: 0.03em;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 flex flex-col items-center justify-center p-2 sm:p-3 lg:p-4 overflow-hidden h-screen relative">
+  
+  <!-- Container de Efeitos de Vitória -->
+  <div id="victory-effects"></div>
+  
+  <!-- Marca d'água -->
+  <div class="fixed bottom-4 right-4 z-10 text-white text-xs sm:text-sm opacity-60 hover:opacity-100 transition-opacity pointer-events-none">
+    Developed by Romário Galdino
+  </div>
+
+  <!-- Botão Hambúrguer para abrir o menu lateral -->
+  <button
+    id="toggle-sidebar-btn"
+    class="fixed top-4 right-4 z-50 bg-white text-purple-600 p-3 rounded-full shadow-lg hover:scale-105 transition-transform"
+    aria-label="Abrir menu"
+  >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <h1 class="game-title mb-3 sm:mb-4 text-center">
+    Wheel ABC
+  </h1>
+
+  <!-- Menu Lateral -->
+  <div id="sidebar" class="sidebar closed fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-40 overflow-y-auto">
+    <div class="p-6">
+      <!-- Cabeçalho do menu -->
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-purple-600">Editar Perguntas</h2>
+        <button
+          id="close-sidebar-btn"
+          class="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+        >
+          ×
+        </button>
+      </div>
+
+      <!-- Container do Editor -->
+      <div id="editor-container" class="mb-6">
+        <p class="text-sm text-gray-600 mb-2">
+          Separe cada pergunta em uma nova linha (pressione Enter para nova pergunta)
+        </p>
+        <textarea
+          id="questions-textarea"
+          class="w-full h-40 p-4 border-2 border-purple-300 rounded-lg focus:border-purple-600 focus:outline-none resize-none"
+          placeholder="Digite uma pergunta por linha"
+        ></textarea>
+        <p class="text-sm text-gray-600 mt-2">
+          Total de perguntas: <span id="questions-count">0</span>
+        </p>
+      </div>
+
+      <!-- Seção de Escolha de Jogo -->
+      <div class="border-t border-gray-200 pt-6">
+        <h3 class="text-xl font-bold text-purple-600 mb-4 text-center">Escolha um Jogo</h3>
+        
+        <!-- Seleção de Jogo -->
+        <div class="flex flex-col gap-4">
+          <button
+            id="race-game-btn"
+            class="w-full bg-purple-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform disabled:opacity-50"
+          >
+            🏎️ Corrida
+          </button>
+          <button
+            id="force-game-btn"
+            class="w-full bg-purple-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform disabled:opacity-50"
+          >
+            💪 Forca
+          </button>
+          <button
+            id="word-game-btn"
+            class="w-full bg-purple-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform disabled:opacity-50"
+          >
+            🔤 Palavra Secreta
+          </button>
+          <button
+            id="no-game-btn"
+            class="w-full bg-gray-400 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
+          >
+            Sem Jogo
+          </button>
+        </div>
+        
+        <!-- Toggle do Modo Battle -->
+        <div class="border-t border-gray-200 pt-6 mt-6">
+          <h3 class="text-xl font-bold text-red-600 mb-4 text-center">Modo Battle</h3>
+          <div class="flex items-center justify-center gap-4">
+            <span class="text-sm text-gray-600">Desativado</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="battle-mode-toggle" class="sr-only peer">
+              <div class="w-14 h-7 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-red-600"></div>
+            </label>
+            <span class="text-sm text-gray-600">Ativado</span>
+          </div>
+          <p class="text-xs text-gray-500 text-center mt-2">Ativa o modo dois jogadores em qualquer jogo</p>
+        </div>
+        
+        <!-- Botão de Compartilhar Jogo -->
+        <div class="border-t border-gray-200 pt-6 mt-6">
+          <h3 class="text-xl font-bold text-green-600 mb-4 text-center">Compartilhar Jogo</h3>
+          <button
+            id="share-game-btn"
+            class="w-full bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
+          >
+            🔗 Criar Link para Compartilhar
+          </button>
+          <p class="text-xs text-gray-500 text-center mt-2">Gere um link para outra pessoa entrar no mesmo jogo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay (fundo escuro quando o menu está aberto) -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+  <!-- Container da Roleta (mostrado quando há perguntas) -->
+  <!-- Modificado para ser um flex container (coluna em telemóvel, linha em ecrãs médios) -->
+  <div id="roulette-container" class="relative flex flex-col lg:flex-row items-center justify-center lg:items-center w-full max-w-7xl gap-2 sm:gap-3 lg:gap-4 px-2 sm:px-3 lg:px-4 mx-auto flex-1 overflow-hidden">
+    
+    <!-- Jogo de Corrida (aparece à esquerda quando selecionado) -->
+    <div id="race-game-container" class="hidden w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
+      <div class="bg-white rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl w-full max-w-full mx-auto overflow-visible">
+        <div class="mb-2">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs sm:text-sm font-semibold text-gray-700">Progresso</span>
+            <span id="race-progress" class="text-xs sm:text-sm font-bold text-purple-600">0%</span>
+          </div>
+          <!-- Pista de Corrida (vertical) - Aumentada e melhorada -->
+          <div class="relative bg-gradient-to-b from-blue-200 via-blue-300 to-blue-400 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] xl:h-[480px] overflow-hidden shadow-inner">
+            <!-- Céu com nuvens -->
+            <div class="absolute left-0 right-0 top-0 h-16 bg-gradient-to-b from-sky-300 to-blue-200 opacity-60"></div>
+            
+            <!-- Grama/Céu nas laterais -->
+            <div class="absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-b from-green-600 via-green-500 to-green-600 opacity-90 shadow-inner"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-b from-green-600 via-green-500 to-green-600 opacity-90 shadow-inner"></div>
+            
+            <!-- Pista (cinza escuro com textura) -->
+            <div class="absolute left-10 right-10 top-0 bottom-0 bg-gradient-to-b from-gray-800 via-gray-700 to-gray-800"></div>
+            
+            <!-- Marcas da pista (laterais) -->
+            <div class="absolute left-10 top-0 bottom-0 w-1 bg-white opacity-50" style="background-image: repeating-linear-gradient(to bottom, transparent, transparent 20px, white 20px, white 30px);"></div>
+            <div class="absolute right-10 top-0 bottom-0 w-1 bg-white opacity-50" style="background-image: repeating-linear-gradient(to bottom, transparent, transparent 20px, white 20px, white 30px);"></div>
+            
+            <!-- Linha central amarela (tracejada) -->
+            <div class="absolute left-1/2 top-0 bottom-0 w-1.5 transform -translate-x-1/2 z-0" 
+                 style="background-image: repeating-linear-gradient(to bottom, transparent, transparent 20px, yellow 20px, yellow 35px); box-shadow: 0 0 5px rgba(255,255,0,0.5);"></div>
+            
+            <!-- Linha de Saída (verde no topo) -->
+            <div class="absolute top-0 left-10 right-10 h-8 bg-gradient-to-b from-green-400 via-green-500 to-green-600 flex items-center justify-center shadow-lg z-20">
+              <div class="flex items-center gap-2">
+                <span class="text-white text-xs font-bold drop-shadow-lg">SAÍDA</span>
+                <div class="w-10 h-5 bg-white border-2 border-black shadow"></div>
+              </div>
+            </div>
+            
+            <!-- Fumaça do Carro 1 -->
+            <div id="smoke-car-1" class="absolute left-1/4 top-8 transition-all duration-300 ease-out z-5 pointer-events-none" style="transform: translateX(-50%) translateY(0px);">
+              <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Partículas de fumaça com gradientes e filtros para efeito mais realista -->
+                <defs>
+                  <radialGradient id="smokeGrad1">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:0.95" />
+                    <stop offset="40%" style="stop-color:#555;stop-opacity:0.8" />
+                    <stop offset="70%" style="stop-color:#777;stop-opacity:0.5" />
+                    <stop offset="100%" style="stop-color:#999;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad2">
+                    <stop offset="0%" style="stop-color:#222;stop-opacity:0.9" />
+                    <stop offset="40%" style="stop-color:#444;stop-opacity:0.75" />
+                    <stop offset="70%" style="stop-color:#666;stop-opacity:0.45" />
+                    <stop offset="100%" style="stop-color:#888;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad3">
+                    <stop offset="0%" style="stop-color:#444;stop-opacity:0.85" />
+                    <stop offset="40%" style="stop-color:#666;stop-opacity:0.7" />
+                    <stop offset="70%" style="stop-color:#888;stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#aaa;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad4">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:0.9" />
+                    <stop offset="40%" style="stop-color:#555;stop-opacity:0.65" />
+                    <stop offset="70%" style="stop-color:#777;stop-opacity:0.35" />
+                    <stop offset="100%" style="stop-color:#999;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad5">
+                    <stop offset="0%" style="stop-color:#444;stop-opacity:0.85" />
+                    <stop offset="40%" style="stop-color:#666;stop-opacity:0.7" />
+                    <stop offset="70%" style="stop-color:#888;stop-opacity:0.45" />
+                    <stop offset="100%" style="stop-color:#aaa;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad6">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:0.8" />
+                    <stop offset="40%" style="stop-color:#555;stop-opacity:0.6" />
+                    <stop offset="70%" style="stop-color:#777;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#999;stop-opacity:0" />
+                  </radialGradient>
+                  <filter id="smokeBlur">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="0.5"/>
+                  </filter>
+                </defs>
+                <circle cx="18" cy="35" r="9" fill="url(#smokeGrad1)" filter="url(#smokeBlur)"/>
+                <circle cx="28" cy="30" r="7" fill="url(#smokeGrad2)" filter="url(#smokeBlur)"/>
+                <circle cx="38" cy="25" r="8" fill="url(#smokeGrad3)" filter="url(#smokeBlur)"/>
+                <circle cx="15" cy="32" r="6" fill="url(#smokeGrad4)" filter="url(#smokeBlur)"/>
+                <circle cx="32" cy="28" r="7.5" fill="url(#smokeGrad5)" filter="url(#smokeBlur)"/>
+                <circle cx="42" cy="22" r="6.5" fill="url(#smokeGrad6)" filter="url(#smokeBlur)"/>
+              </svg>
+            </div>
+            
+            <!-- Carro 1 - Jogador 1 (esquerda) -->
+            <div id="race-car-1" class="absolute left-1/4 top-8 transition-all duration-500 ease-out z-10" style="transform: translateX(-50%) translateY(0px);">
+              <svg width="55" height="85" viewBox="0 0 55 85" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-lg">
+                <defs>
+                  <!-- Gradiente principal do carro -->
+                  <linearGradient id="car1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF5555;stop-opacity:1" />
+                    <stop offset="30%" style="stop-color:#FF3333;stop-opacity:1" />
+                    <stop offset="70%" style="stop-color:#DD0000;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#AA0000;stop-opacity:1" />
+                  </linearGradient>
+                  <!-- Gradiente de iluminação (highlight) -->
+                  <linearGradient id="car1Highlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FFAAAA;stop-opacity:0.6" />
+                    <stop offset="50%" style="stop-color:#FF8888;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:transparent;stop-opacity:0" />
+                  </linearGradient>
+                  <!-- Gradiente de sombra -->
+                  <linearGradient id="car1Shadow" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:transparent;stop-opacity:0" />
+                    <stop offset="50%" style="stop-color:#990000;stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#660000;stop-opacity:0.6" />
+                  </linearGradient>
+                  <!-- Gradiente para vidros -->
+                  <linearGradient id="car1Glass" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#E0F4FF;stop-opacity:0.9" />
+                    <stop offset="50%" style="stop-color:#B0E0E6;stop-opacity:0.7" />
+                    <stop offset="100%" style="stop-color:#87CEEB;stop-opacity:0.5" />
+                  </linearGradient>
+                  <!-- Gradiente para rodas -->
+                  <radialGradient id="car1Wheel">
+                    <stop offset="0%" style="stop-color:#444;stop-opacity:1" />
+                    <stop offset="40%" style="stop-color:#222;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#000;stop-opacity:1" />
+                  </radialGradient>
+                  <!-- Gradiente para aro da roda -->
+                  <radialGradient id="car1Rim">
+                    <stop offset="0%" style="stop-color:#CCC;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#888;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#666;stop-opacity:1" />
+                  </radialGradient>
+                  <!-- Filtro de sombra -->
+                  <filter id="carShadow1" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+                  </filter>
+                </defs>
+                
+                <!-- Sombra do carro -->
+                <ellipse cx="25" cy="75" rx="18" ry="5" fill="#000" opacity="0.3"/>
+                
+                <!-- Corpo principal do carro -->
+                <ellipse cx="25" cy="42" rx="21" ry="36" fill="url(#car1Gradient)" stroke="#880000" stroke-width="2"/>
+                
+                <!-- Sombra interna (profundidade) -->
+                <ellipse cx="25" cy="42" rx="21" ry="36" fill="url(#car1Shadow)"/>
+                
+                <!-- Highlight (brilho) no topo -->
+                <ellipse cx="25" cy="35" rx="16" ry="20" fill="url(#car1Highlight)"/>
+                
+                <!-- Linha de design superior -->
+                <ellipse cx="25" cy="28" rx="18" ry="25" fill="none" stroke="#FF8888" stroke-width="1.5" opacity="0.6"/>
+                
+                <!-- Parachoques -->
+                <ellipse cx="25" cy="15" rx="19" ry="8" fill="#DD0000" stroke="#990000" stroke-width="1.5"/>
+                <ellipse cx="25" cy="69" rx="19" ry="8" fill="#DD0000" stroke="#990000" stroke-width="1.5"/>
+                
+                <!-- Vidros frontais e traseiros -->
+                <ellipse cx="25" cy="28" rx="13" ry="17" fill="url(#car1Glass)"/>
+                <ellipse cx="25" cy="56" rx="13" ry="17" fill="url(#car1Glass)"/>
+                
+                <!-- Reflexos nos vidros -->
+                <ellipse cx="22" cy="26" rx="6" ry="8" fill="#FFF" opacity="0.4"/>
+                <ellipse cx="22" cy="54" rx="6" ry="8" fill="#FFF" opacity="0.4"/>
+                
+                <!-- Linhas de design horizontais -->
+                <rect x="12" y="22" width="26" height="2" fill="#FF6666" rx="1" opacity="0.7"/>
+                <rect x="12" y="60" width="26" height="2" fill="#FF6666" rx="1" opacity="0.7"/>
+                
+                <!-- Rodas com mais detalhes -->
+                <!-- Roda frontal esquerda -->
+                <ellipse cx="13" cy="16" rx="5" ry="7" fill="url(#car1Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow1)"/>
+                <ellipse cx="13" cy="16" rx="3" ry="4.5" fill="url(#car1Rim)"/>
+                <ellipse cx="13" cy="16" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Roda frontal direita -->
+                <ellipse cx="37" cy="16" rx="5" ry="7" fill="url(#car1Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow1)"/>
+                <ellipse cx="37" cy="16" rx="3" ry="4.5" fill="url(#car1Rim)"/>
+                <ellipse cx="37" cy="16" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Roda traseira esquerda -->
+                <ellipse cx="13" cy="68" rx="5" ry="7" fill="url(#car1Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow1)"/>
+                <ellipse cx="13" cy="68" rx="3" ry="4.5" fill="url(#car1Rim)"/>
+                <ellipse cx="13" cy="68" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Roda traseira direita -->
+                <ellipse cx="37" cy="68" rx="5" ry="7" fill="url(#car1Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow1)"/>
+                <ellipse cx="37" cy="68" rx="3" ry="4.5" fill="url(#car1Rim)"/>
+                <ellipse cx="37" cy="68" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Luzes dianteiras (amarelas/brilhantes) -->
+                <ellipse cx="25" cy="6" rx="4" ry="5" fill="#FFEE00" filter="url(#carShadow1)"/>
+                <ellipse cx="25" cy="6" rx="3" ry="4" fill="#FFF" opacity="0.8"/>
+                <circle cx="25" cy="6" r="1.5" fill="#FFD700"/>
+                
+                <!-- Luzes traseiras (vermelhas) -->
+                <ellipse cx="25" cy="78" rx="4" ry="5" fill="#FF0000" filter="url(#carShadow1)"/>
+                <ellipse cx="25" cy="78" rx="3" ry="4" fill="#FF4444" opacity="0.7"/>
+                <circle cx="25" cy="78" r="1.5" fill="#FF6666"/>
+                
+                <!-- Antena -->
+                <line x1="25" y1="10" x2="25" y2="5" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="25" cy="5" r="1" fill="#333"/>
+                
+                <!-- Detalhes de linha no capô -->
+                <ellipse cx="25" cy="20" rx="17" ry="12" fill="none" stroke="#FF6666" stroke-width="1" opacity="0.5"/>
+              </svg>
+            </div>
+            
+            <!-- Fumaça do Carro 2 -->
+            <div id="smoke-car-2" class="absolute left-3/4 top-8 transition-all duration-300 ease-out z-5 pointer-events-none" style="transform: translateX(-50%) translateY(0px);">
+              <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Partículas de fumaça com gradientes e filtros para efeito mais realista -->
+                <defs>
+                  <radialGradient id="smokeGrad2-1">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:0.95" />
+                    <stop offset="40%" style="stop-color:#555;stop-opacity:0.8" />
+                    <stop offset="70%" style="stop-color:#777;stop-opacity:0.5" />
+                    <stop offset="100%" style="stop-color:#999;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad2-2">
+                    <stop offset="0%" style="stop-color:#222;stop-opacity:0.9" />
+                    <stop offset="40%" style="stop-color:#444;stop-opacity:0.75" />
+                    <stop offset="70%" style="stop-color:#666;stop-opacity:0.45" />
+                    <stop offset="100%" style="stop-color:#888;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad2-3">
+                    <stop offset="0%" style="stop-color:#444;stop-opacity:0.85" />
+                    <stop offset="40%" style="stop-color:#666;stop-opacity:0.7" />
+                    <stop offset="70%" style="stop-color:#888;stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#aaa;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad2-4">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:0.9" />
+                    <stop offset="40%" style="stop-color:#555;stop-opacity:0.65" />
+                    <stop offset="70%" style="stop-color:#777;stop-opacity:0.35" />
+                    <stop offset="100%" style="stop-color:#999;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad2-5">
+                    <stop offset="0%" style="stop-color:#444;stop-opacity:0.85" />
+                    <stop offset="40%" style="stop-color:#666;stop-opacity:0.7" />
+                    <stop offset="70%" style="stop-color:#888;stop-opacity:0.45" />
+                    <stop offset="100%" style="stop-color:#aaa;stop-opacity:0" />
+                  </radialGradient>
+                  <radialGradient id="smokeGrad2-6">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:0.8" />
+                    <stop offset="40%" style="stop-color:#555;stop-opacity:0.6" />
+                    <stop offset="70%" style="stop-color:#777;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#999;stop-opacity:0" />
+                  </radialGradient>
+                  <filter id="smokeBlur2">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="0.5"/>
+                  </filter>
+                </defs>
+                <circle cx="18" cy="35" r="9" fill="url(#smokeGrad2-1)" filter="url(#smokeBlur2)"/>
+                <circle cx="28" cy="30" r="7" fill="url(#smokeGrad2-2)" filter="url(#smokeBlur2)"/>
+                <circle cx="38" cy="25" r="8" fill="url(#smokeGrad2-3)" filter="url(#smokeBlur2)"/>
+                <circle cx="15" cy="32" r="6" fill="url(#smokeGrad2-4)" filter="url(#smokeBlur2)"/>
+                <circle cx="32" cy="28" r="7.5" fill="url(#smokeGrad2-5)" filter="url(#smokeBlur2)"/>
+                <circle cx="42" cy="22" r="6.5" fill="url(#smokeGrad2-6)" filter="url(#smokeBlur2)"/>
+              </svg>
+            </div>
+            
+            <!-- Carro 2 - Jogador 2 (direita) -->
+            <div id="race-car-2" class="absolute left-3/4 top-8 transition-all duration-500 ease-out z-10" style="transform: translateX(-50%) translateY(0px);">
+              <svg width="55" height="85" viewBox="0 0 55 85" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-lg">
+                <defs>
+                  <!-- Gradiente principal do carro -->
+                  <linearGradient id="car2Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#5555FF;stop-opacity:1" />
+                    <stop offset="30%" style="stop-color:#3333FF;stop-opacity:1" />
+                    <stop offset="70%" style="stop-color:#0000DD;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#0000AA;stop-opacity:1" />
+                  </linearGradient>
+                  <!-- Gradiente de iluminação (highlight) -->
+                  <linearGradient id="car2Highlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#AAAAFF;stop-opacity:0.6" />
+                    <stop offset="50%" style="stop-color:#8888FF;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:transparent;stop-opacity:0" />
+                  </linearGradient>
+                  <!-- Gradiente de sombra -->
+                  <linearGradient id="car2Shadow" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:transparent;stop-opacity:0" />
+                    <stop offset="50%" style="stop-color:#000099;stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#000066;stop-opacity:0.6" />
+                  </linearGradient>
+                  <!-- Gradiente para vidros -->
+                  <linearGradient id="car2Glass" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#E0F4FF;stop-opacity:0.9" />
+                    <stop offset="50%" style="stop-color:#B0E0E6;stop-opacity:0.7" />
+                    <stop offset="100%" style="stop-color:#87CEEB;stop-opacity:0.5" />
+                  </linearGradient>
+                  <!-- Gradiente para rodas -->
+                  <radialGradient id="car2Wheel">
+                    <stop offset="0%" style="stop-color:#444;stop-opacity:1" />
+                    <stop offset="40%" style="stop-color:#222;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#000;stop-opacity:1" />
+                  </radialGradient>
+                  <!-- Gradiente para aro da roda -->
+                  <radialGradient id="car2Rim">
+                    <stop offset="0%" style="stop-color:#CCC;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#888;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#666;stop-opacity:1" />
+                  </radialGradient>
+                  <!-- Filtro de sombra -->
+                  <filter id="carShadow2" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+                  </filter>
+                </defs>
+                
+                <!-- Sombra do carro -->
+                <ellipse cx="25" cy="75" rx="18" ry="5" fill="#000" opacity="0.3"/>
+                
+                <!-- Corpo principal do carro -->
+                <ellipse cx="25" cy="42" rx="21" ry="36" fill="url(#car2Gradient)" stroke="#000088" stroke-width="2"/>
+                
+                <!-- Sombra interna (profundidade) -->
+                <ellipse cx="25" cy="42" rx="21" ry="36" fill="url(#car2Shadow)"/>
+                
+                <!-- Highlight (brilho) no topo -->
+                <ellipse cx="25" cy="35" rx="16" ry="20" fill="url(#car2Highlight)"/>
+                
+                <!-- Linha de design superior -->
+                <ellipse cx="25" cy="28" rx="18" ry="25" fill="none" stroke="#8888FF" stroke-width="1.5" opacity="0.6"/>
+                
+                <!-- Parachoques -->
+                <ellipse cx="25" cy="15" rx="19" ry="8" fill="#0000DD" stroke="#000099" stroke-width="1.5"/>
+                <ellipse cx="25" cy="69" rx="19" ry="8" fill="#0000DD" stroke="#000099" stroke-width="1.5"/>
+                
+                <!-- Vidros frontais e traseiros -->
+                <ellipse cx="25" cy="28" rx="13" ry="17" fill="url(#car2Glass)"/>
+                <ellipse cx="25" cy="56" rx="13" ry="17" fill="url(#car2Glass)"/>
+                
+                <!-- Reflexos nos vidros -->
+                <ellipse cx="22" cy="26" rx="6" ry="8" fill="#FFF" opacity="0.4"/>
+                <ellipse cx="22" cy="54" rx="6" ry="8" fill="#FFF" opacity="0.4"/>
+                
+                <!-- Linhas de design horizontais -->
+                <rect x="12" y="22" width="26" height="2" fill="#6666FF" rx="1" opacity="0.7"/>
+                <rect x="12" y="60" width="26" height="2" fill="#6666FF" rx="1" opacity="0.7"/>
+                
+                <!-- Rodas com mais detalhes -->
+                <!-- Roda frontal esquerda -->
+                <ellipse cx="13" cy="16" rx="5" ry="7" fill="url(#car2Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow2)"/>
+                <ellipse cx="13" cy="16" rx="3" ry="4.5" fill="url(#car2Rim)"/>
+                <ellipse cx="13" cy="16" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Roda frontal direita -->
+                <ellipse cx="37" cy="16" rx="5" ry="7" fill="url(#car2Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow2)"/>
+                <ellipse cx="37" cy="16" rx="3" ry="4.5" fill="url(#car2Rim)"/>
+                <ellipse cx="37" cy="16" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Roda traseira esquerda -->
+                <ellipse cx="13" cy="68" rx="5" ry="7" fill="url(#car2Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow2)"/>
+                <ellipse cx="13" cy="68" rx="3" ry="4.5" fill="url(#car2Rim)"/>
+                <ellipse cx="13" cy="68" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Roda traseira direita -->
+                <ellipse cx="37" cy="68" rx="5" ry="7" fill="url(#car2Wheel)" stroke="#000" stroke-width="1.5" filter="url(#carShadow2)"/>
+                <ellipse cx="37" cy="68" rx="3" ry="4.5" fill="url(#car2Rim)"/>
+                <ellipse cx="37" cy="68" rx="1.5" ry="2" fill="#DDD"/>
+                
+                <!-- Luzes dianteiras (amarelas/brilhantes) -->
+                <ellipse cx="25" cy="6" rx="4" ry="5" fill="#FFEE00" filter="url(#carShadow2)"/>
+                <ellipse cx="25" cy="6" rx="3" ry="4" fill="#FFF" opacity="0.8"/>
+                <circle cx="25" cy="6" r="1.5" fill="#FFD700"/>
+                
+                <!-- Luzes traseiras (vermelhas) -->
+                <ellipse cx="25" cy="78" rx="4" ry="5" fill="#FF0000" filter="url(#carShadow2)"/>
+                <ellipse cx="25" cy="78" rx="3" ry="4" fill="#FF4444" opacity="0.7"/>
+                <circle cx="25" cy="78" r="1.5" fill="#FF6666"/>
+                
+                <!-- Antena -->
+                <line x1="25" y1="10" x2="25" y2="5" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="25" cy="5" r="1" fill="#333"/>
+                
+                <!-- Detalhes de linha no capô -->
+                <ellipse cx="25" cy="20" rx="17" ry="12" fill="none" stroke="#6666FF" stroke-width="1" opacity="0.5"/>
+              </svg>
+            </div>
+            
+            <!-- Linha de Chegada (preto e branco no fundo) -->
+            <div class="absolute bottom-0 left-10 right-10 h-10 bg-gradient-to-t from-black via-gray-900 to-gray-800 flex items-center justify-center shadow-2xl z-20">
+              <div class="flex items-center gap-1 w-full">
+                <div class="w-5 h-full bg-white"></div>
+                <div class="w-5 h-full bg-black"></div>
+                <div class="w-5 h-full bg-white"></div>
+                <div class="w-5 h-full bg-black"></div>
+                <div class="w-5 h-full bg-white"></div>
+                <div class="w-5 h-full bg-black"></div>
+                <div class="w-5 h-full bg-white"></div>
+                <div class="w-5 h-full bg-black"></div>
+                <div class="w-5 h-full bg-white"></div>
+              </div>
+              <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 z-30">
+                <span class="text-white text-sm font-bold bg-red-600 px-3 py-1.5 rounded shadow-lg">CHEGADA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-2">
+          <!-- Modo Single Player -->
+          <div id="race-single-player" class="hidden">
+            <p class="text-xs sm:text-sm text-gray-600 mb-1">Acertos: <span id="race-score" class="font-bold text-purple-600">0</span></p>
+            <p class="text-xs text-gray-500">Cada acerto move o carro na pista!</p>
+          </div>
+          
+          <!-- Modo Battle (Dois Jogadores) -->
+          <div id="race-battle-mode" class="hidden">
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <div class="text-center">
+                <p class="text-xs text-red-600 font-semibold mb-1">Jogador 1</p>
+                <p class="text-xs sm:text-sm text-gray-600">Acertos: <span id="race-score-1" class="font-bold text-red-600">0</span></p>
+                <p class="text-xs text-gray-500">Progresso: <span id="race-progress-1" class="font-bold text-red-600">0%</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-xs text-blue-600 font-semibold mb-1">Jogador 2</p>
+                <p class="text-xs sm:text-sm text-gray-600">Acertos: <span id="race-score-2" class="font-bold text-blue-600">0</span></p>
+                <p class="text-xs text-gray-500">Progresso: <span id="race-progress-2" class="font-bold text-blue-600">0%</span></p>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mb-1">Vez do: <span id="current-player" class="font-bold text-purple-600">Jogador 1</span></p>
+            <p class="text-xs text-gray-400">Cada acerto move o carro do jogador atual!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Jogo da Forca (aparece à esquerda quando selecionado) -->
+    <div id="force-game-container" class="hidden w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
+      <div class="bg-white rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl w-full max-w-full mx-auto overflow-visible">
+        <div class="mb-2">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs sm:text-sm font-semibold text-gray-700">Erros</span>
+            <span id="force-errors" class="text-xs sm:text-sm font-bold text-red-600">0</span>
+          </div>
+          <!-- Desenho da Forca e Boneco -->
+          <div class="relative bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] xl:h-[480px] overflow-hidden shadow-inner">
+            <!-- Modo Single Player -->
+            <div id="force-hangman-single" class="w-full h-full flex items-center justify-center">
+              <svg width="100%" height="100%" viewBox="0 0 300 400" class="preserveAspectRatio">
+                <!-- Forca -->
+                <g id="gallows" class="stroke-gray-800 stroke-4 fill-none">
+                  <!-- Base -->
+                  <line x1="50" y1="380" x2="150" y2="380"/>
+                  <!-- Poste vertical -->
+                  <line x1="100" y1="380" x2="100" y2="50"/>
+                  <!-- Trave superior -->
+                  <line x1="100" y1="50" x2="200" y2="50"/>
+                  <!-- Corda -->
+                  <line id="rope" x1="200" y1="50" x2="200" y2="100" class="stroke-gray-700 stroke-3"/>
+                </g>
+                
+                <!-- Boneco (partes aparecem conforme erros) -->
+                <g id="hangman-parts" class="stroke-gray-900 stroke-3 fill-none">
+                  <!-- Cabeça -->
+                  <circle id="head" cx="200" cy="130" r="30" class="hidden"/>
+                  <!-- Corpo -->
+                  <line id="body" x1="200" y1="160" x2="200" y2="280" class="hidden"/>
+                  <!-- Braço esquerdo -->
+                  <line id="arm-left" x1="200" y1="200" x2="160" y2="240" class="hidden"/>
+                  <!-- Braço direito -->
+                  <line id="arm-right" x1="200" y1="200" x2="240" y2="240" class="hidden"/>
+                  <!-- Perna esquerda -->
+                  <line id="leg-left" x1="200" y1="280" x2="170" y2="340" class="hidden"/>
+                  <!-- Perna direita -->
+                  <line id="leg-right" x1="200" y1="280" x2="230" y2="340" class="hidden"/>
+                </g>
+              </svg>
+            </div>
+            
+            <!-- Modo Battle - Dois Bonecos -->
+            <div id="force-hangman-battle" class="hidden w-full h-full flex items-center justify-center gap-4">
+              <!-- Boneco Jogador 1 (esquerda) -->
+              <div class="w-1/2 h-full flex items-center justify-center">
+                <svg width="100%" height="100%" viewBox="0 0 140 400" class="preserveAspectRatio">
+                  <!-- Forca -->
+                  <g class="stroke-gray-800 stroke-3 fill-none">
+                    <line x1="20" y1="380" x2="80" y2="380"/>
+                    <line x1="50" y1="380" x2="50" y2="50"/>
+                    <line x1="50" y1="50" x2="100" y2="50"/>
+                    <line x1="100" y1="50" x2="100" y2="100" class="stroke-gray-700 stroke-2"/>
+                  </g>
+                  <!-- Boneco Jogador 1 -->
+                  <g class="stroke-red-600 stroke-2 fill-none">
+                    <circle id="head1" cx="100" cy="130" r="25" class="hidden"/>
+                    <line id="body1" x1="100" y1="155" x2="100" y2="280" class="hidden"/>
+                    <line id="arm-left1" x1="100" y1="200" x2="75" y2="240" class="hidden"/>
+                    <line id="arm-right1" x1="100" y1="200" x2="125" y2="240" class="hidden"/>
+                    <line id="leg-left1" x1="100" y1="280" x2="85" y2="340" class="hidden"/>
+                    <line id="leg-right1" x1="100" y1="280" x2="115" y2="340" class="hidden"/>
+                  </g>
+                </svg>
+              </div>
+              
+              <!-- Boneco Jogador 2 (direita) -->
+              <div class="w-1/2 h-full flex items-center justify-center">
+                <svg width="100%" height="100%" viewBox="0 0 140 400" class="preserveAspectRatio">
+                  <!-- Forca -->
+                  <g class="stroke-gray-800 stroke-3 fill-none">
+                    <line x1="20" y1="380" x2="80" y2="380"/>
+                    <line x1="50" y1="380" x2="50" y2="50"/>
+                    <line x1="50" y1="50" x2="100" y2="50"/>
+                    <line x1="100" y1="50" x2="100" y2="100" class="stroke-gray-700 stroke-2"/>
+                  </g>
+                  <!-- Boneco Jogador 2 -->
+                  <g class="stroke-blue-600 stroke-2 fill-none">
+                    <circle id="head2" cx="100" cy="130" r="25" class="hidden"/>
+                    <line id="body2" x1="100" y1="155" x2="100" y2="280" class="hidden"/>
+                    <line id="arm-left2" x1="100" y1="200" x2="75" y2="240" class="hidden"/>
+                    <line id="arm-right2" x1="100" y1="200" x2="125" y2="240" class="hidden"/>
+                    <line id="leg-left2" x1="100" y1="280" x2="85" y2="340" class="hidden"/>
+                    <line id="leg-right2" x1="100" y1="280" x2="115" y2="340" class="hidden"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-2">
+          <!-- Modo Single Player -->
+          <div id="force-single-player" class="hidden">
+            <p class="text-xs sm:text-sm text-gray-600 mb-1">Erros: <span id="force-error-count" class="font-bold text-red-600">0</span>/6</p>
+            <p class="text-xs text-gray-500">Cada erro desenha uma parte do boneco!</p>
+          </div>
+          
+          <!-- Modo Battle (Dois Jogadores) -->
+          <div id="force-battle-mode" class="hidden">
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <div class="text-center">
+                <p class="text-xs text-red-600 font-semibold mb-1">Jogador 1</p>
+                <p class="text-xs sm:text-sm text-gray-600">Erros: <span id="force-error-count-1" class="font-bold text-red-600">0</span>/6</p>
+                <p class="text-xs text-gray-500" id="force-error-1">0 erros</p>
+              </div>
+              <div class="text-center">
+                <p class="text-xs text-blue-600 font-semibold mb-1">Jogador 2</p>
+                <p class="text-xs sm:text-sm text-gray-600">Erros: <span id="force-error-count-2" class="font-bold text-blue-600">0</span>/6</p>
+                <p class="text-xs text-gray-500" id="force-error-2">0 erros</p>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mb-1">Vez do: <span id="current-player-force" class="font-bold text-purple-600">Jogador 1</span></p>
+            <p class="text-xs text-gray-400">Cada erro desenha uma parte do boneco do jogador atual!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Jogo da Palavra Secreta (aparece à esquerda quando selecionado) -->
+    <div id="word-game-container" class="hidden w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
+      <div class="bg-white rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl w-full max-w-full mx-auto overflow-visible">
+        <!-- Modo Single Player -->
+        <div id="word-single-player" class="hidden">
+          <div class="mb-2">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs sm:text-sm font-semibold text-gray-700">Palavra Secreta</span>
+              <span id="word-progress" class="text-xs sm:text-sm font-bold text-purple-600">0%</span>
+            </div>
+            <!-- Display da Palavra -->
+            <div class="relative bg-gradient-to-b from-purple-50 to-pink-50 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] xl:h-[480px] overflow-hidden shadow-inner flex flex-col items-center justify-center p-4">
+              <div class="text-center">
+                <p class="text-xs text-gray-600 mb-4">Descubra a palavra secreta!</p>
+                <div id="word-display" class="flex gap-2 justify-center items-center flex-wrap mb-4">
+                  <!-- As letras serão inseridas aqui dinamicamente -->
+                </div>
+                <div class="mb-4">
+                  <input 
+                    type="text" 
+                    id="word-letter-input" 
+                    maxlength="1" 
+                    placeholder="Digite uma letra"
+                    class="w-20 h-12 text-center text-2xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-600 focus:outline-none uppercase"
+                    disabled
+                  />
+                  <button 
+                    id="word-try-letter-btn" 
+                    class="ml-2 bg-purple-600 text-white px-4 py-3 rounded-lg font-bold shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                  >
+                    Tentar
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500 mb-2">Letras tentadas: <span id="word-tried-letters" class="font-bold text-gray-700"></span></p>
+                <p class="text-xs text-green-600" id="word-message"></p>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-2">
+            <p class="text-xs sm:text-sm text-gray-600 mb-1">Acertos: <span id="word-score" class="font-bold text-green-600">0</span></p>
+            <p class="text-xs text-gray-500">Cada acerto permite tentar uma letra!</p>
+          </div>
+        </div>
+        
+        <!-- Modo Battle (Dois Jogadores) -->
+        <div id="word-battle-mode" class="hidden">
+          <div class="mb-2">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs sm:text-sm font-semibold text-gray-700">Palavra Secreta</span>
+              <span id="word-progress-battle" class="text-xs sm:text-sm font-bold text-purple-600">0%</span>
+            </div>
+            <!-- Display da Palavra -->
+            <div class="relative bg-gradient-to-b from-purple-50 to-pink-50 rounded-lg h-[300px] sm:h-[350px] md:h-[400px] lg:h-[450px] xl:h-[480px] overflow-hidden shadow-inner flex flex-col items-center justify-center p-4">
+              <div class="text-center">
+                <p class="text-xs text-gray-600 mb-4">Descubram a palavra secreta!</p>
+                <div id="word-display-battle" class="flex gap-2 justify-center items-center flex-wrap mb-4">
+                  <!-- As letras serão inseridas aqui dinamicamente -->
+                </div>
+                <div class="mb-4">
+                  <input 
+                    type="text" 
+                    id="word-letter-input-battle" 
+                    maxlength="1" 
+                    placeholder="Digite uma letra"
+                    class="w-20 h-12 text-center text-2xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-600 focus:outline-none uppercase"
+                    disabled
+                  />
+                  <button 
+                    id="word-try-letter-btn-battle" 
+                    class="ml-2 bg-purple-600 text-white px-4 py-3 rounded-lg font-bold shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                  >
+                    Tentar
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500 mb-2">Letras tentadas: <span id="word-tried-letters-battle" class="font-bold text-gray-700"></span></p>
+                <p class="text-xs text-gray-500 mb-1">Vez do: <span id="current-player-word" class="font-bold text-purple-600">Jogador 1</span></p>
+                <p class="text-xs text-green-600" id="word-message-battle"></p>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-2">
+            <div class="grid grid-cols-2 gap-3 mb-2">
+              <div class="text-center">
+                <p class="text-xs text-red-600 font-semibold mb-1">Jogador 1</p>
+                <p class="text-xs sm:text-sm text-gray-600">Acertos: <span id="word-score-1" class="font-bold text-red-600">0</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-xs text-blue-600 font-semibold mb-1">Jogador 2</p>
+                <p class="text-xs sm:text-sm text-gray-600">Acertos: <span id="word-score-2" class="font-bold text-blue-600">0</span></p>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mb-1">Cada acerto permite tentar uma letra!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Adicionado um wrapper para conter a roleta e a seta -->
+    <div class="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96 flex-shrink-0 lg:self-center mx-auto">
+      <!-- Seta/Ponteiro -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="margin-top: -60px;"> <!-- Ajuste para apontar para cima -->
+        <svg width="120" height="120" viewBox="0 0 120 120" class="drop-shadow-2xl">
+          <!-- CORREÇÃO: O path do SVG estava em falta -->
+          <path d="M60 60 L60 10 L50 25 L40 25 L60 0 L80 25 L70 25 L60 10 Z" fill="#FFD700" stroke="#FF6B00" strokeWidth="3"/>
+        </svg>
+      </div>
+
+      <!-- CORREÇÃO: O wrapper da roleta e o SVG estavam em falta -->
+      <!-- Wrapper da Roleta (para aplicar a rotação) -->
+      <div id="wheel-wrapper" class="relative w-full h-full">
+        <svg
+          viewBox="0 0 200 200"
+          class="w-full h-full drop-shadow-2xl"
+        >
+          <!-- Os setores da roleta serão inseridos aqui pelo JS -->
+          <g id="wheel-sectors"></g>
+          <!-- Círculo central (desenhado por último para ficar por cima) -->
+          <circle cx="100" cy="100" r="15" fill="white" stroke="#333" strokeWidth="3" />
+        </svg>
+      </div>
+      <!-- Fim da correção -->
+
+      <!-- Botão de Girar (centralizado no meio da roleta, fora do wrapper que gira) -->
+      <button
+        id="spin-btn"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-white text-purple-600 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full font-bold shadow-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base md:text-lg"
+      >
+        Girar
+      </button>
+    </div> <!-- Fim do wrapper da roleta -->
+  </div>
+
+  <!-- Container de "Fim de Jogo" (mostrado quando há perguntas) -->
+  <div id="finished-container" class="text-center hidden">
+    <div class="text-6xl mb-4">🎉</div>
+    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">Todas as perguntas foram respondidas!</h2>
+    <button
+      id="restart-btn"
+      class="mt-4 bg-white text-purple-600 px-6 py-3 text-lg sm:px-8 sm:py-4 sm:text-xl rounded-full font-bold shadow-lg hover:scale-105 transition-transform"
+    >
+      Reiniciar Roleta
+    </button>
+  </div>
+
+  <!-- Modal da Pergunta (inicialmente escondido) -->
+  <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 p-4 hidden">
+    <!-- CORREÇÃO: Adicionado 'id' e removida a classe 'modal-content' daqui -->
+    <div id="modal-content-div" class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl">
+      <div class="text-center">
+        <div id="modal-question-num" class="text-5xl sm:text-6xl lg:text-7xl font-bold text-purple-600 mb-6">
+          #1
+        </div>
+        <p id="modal-question-text" class="text-lg sm:text-xl lg:text-2xl text-gray-800 font-medium mb-8">
+          Pergunta...
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            id="modal-correct-btn"
+            class="bg-green-600 text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-bold sm:text-lg hover:bg-green-700 transition-colors"
+          >
+            ✓ Acertou
+          </button>
+          <button
+            id="modal-wrong-btn"
+            class="bg-red-600 text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-bold sm:text-lg hover:bg-red-700 transition-colors"
+          >
+            ✗ Errou
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Customizado para Alertas -->
+  <div id="custom-alert-modal" class="custom-modal hidden">
+    <div class="custom-modal-content">
+      <div class="custom-modal-header">
+        <h3 id="custom-alert-title">Aviso</h3>
+        <button id="custom-alert-close" class="custom-modal-close">&times;</button>
+      </div>
+      <div class="custom-modal-body">
+        <p id="custom-alert-message"></p>
+      </div>
+      <div class="custom-modal-footer">
+        <button id="custom-alert-ok" class="custom-modal-btn custom-modal-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Customizado para Confirmações -->
+  <div id="custom-confirm-modal" class="custom-modal hidden">
+    <div class="custom-modal-content">
+      <div class="custom-modal-header">
+        <h3 id="custom-confirm-title">Confirmar</h3>
+        <button id="custom-confirm-close" class="custom-modal-close">&times;</button>
+      </div>
+      <div class="custom-modal-body">
+        <p id="custom-confirm-message"></p>
+      </div>
+      <div class="custom-modal-footer">
+        <button id="custom-confirm-yes" class="custom-modal-btn custom-modal-btn-primary">Sim</button>
+        <button id="custom-confirm-no" class="custom-modal-btn custom-modal-btn-secondary">Não</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Customizado para Prompts (Input) -->
+  <div id="custom-prompt-modal" class="custom-modal hidden">
+    <div class="custom-modal-content custom-modal-content-large">
+      <div class="custom-modal-header">
+        <h3 id="custom-prompt-title">Entrada</h3>
+        <button id="custom-prompt-close" class="custom-modal-close">&times;</button>
+      </div>
+      <div class="custom-modal-body">
+        <p id="custom-prompt-message" class="mb-4"></p>
+        <input type="text" id="custom-prompt-input" class="custom-prompt-input" placeholder="Digite aqui...">
+      </div>
+      <div class="custom-modal-footer">
+        <button id="custom-prompt-ok" class="custom-modal-btn custom-modal-btn-primary">OK</button>
+        <button id="custom-prompt-cancel" class="custom-modal-btn custom-modal-btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Compartilhamento -->
+  <div id="share-modal" class="custom-modal hidden">
+    <div class="custom-modal-content custom-modal-content-large">
+      <div class="custom-modal-header">
+        <h3 id="share-modal-title">Compartilhar Jogo</h3>
+        <button id="share-modal-close" class="custom-modal-close">&times;</button>
+      </div>
+      <div class="custom-modal-body">
+        <p id="share-modal-message" class="mb-4">Compartilhe este link para outra pessoa entrar no mesmo jogo:</p>
+        <div class="flex gap-2 mb-4">
+          <input type="text" id="share-link-input" class="flex-1 p-3 border-2 border-purple-300 rounded-lg focus:border-purple-600 focus:outline-none" readonly>
+          <button id="share-copy-btn" class="bg-purple-600 text-white px-4 py-3 rounded-lg font-bold hover:bg-purple-700 transition-colors">
+            Copiar
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 text-center">A outra pessoa verá as mesmas perguntas e poderá jogar junto!</p>
+      </div>
+      <div class="custom-modal-footer">
+        <button id="share-modal-ok" class="custom-modal-btn custom-modal-btn-primary">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lógica da Aplicação -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- Funções de Modal Customizado (substituem alert, confirm, prompt) ---
+      
+      // Função customizada para alert
+      function customAlert(message, title = 'Aviso') {
+        return new Promise((resolve) => {
+          const modal = document.getElementById('custom-alert-modal');
+          const titleEl = document.getElementById('custom-alert-title');
+          const messageEl = document.getElementById('custom-alert-message');
+          const okBtn = document.getElementById('custom-alert-ok');
+          const closeBtn = document.getElementById('custom-alert-close');
+          
+          titleEl.textContent = title;
+          messageEl.textContent = message;
+          modal.classList.remove('hidden');
+          
+          const closeModal = () => {
+            modal.classList.add('hidden');
+            resolve();
+          };
+          
+          okBtn.onclick = closeModal;
+          closeBtn.onclick = closeModal;
+          
+          // Fecha ao clicar no overlay
+          modal.onclick = (e) => {
+            if (e.target === modal) {
+              closeModal();
+            }
+          };
+        });
+      }
+      
+      // Função customizada para confirm
+      function customConfirm(message, title = 'Confirmar') {
+        return new Promise((resolve) => {
+          const modal = document.getElementById('custom-confirm-modal');
+          const titleEl = document.getElementById('custom-confirm-title');
+          const messageEl = document.getElementById('custom-confirm-message');
+          const yesBtn = document.getElementById('custom-confirm-yes');
+          const noBtn = document.getElementById('custom-confirm-no');
+          const closeBtn = document.getElementById('custom-confirm-close');
+          
+          titleEl.textContent = title;
+          messageEl.textContent = message;
+          modal.classList.remove('hidden');
+          
+          const closeModal = (result) => {
+            modal.classList.add('hidden');
+            resolve(result);
+          };
+          
+          yesBtn.onclick = () => closeModal(true);
+          noBtn.onclick = () => closeModal(false);
+          closeBtn.onclick = () => closeModal(false);
+          
+          // Fecha ao clicar no overlay (retorna false)
+          modal.onclick = (e) => {
+            if (e.target === modal) {
+              closeModal(false);
+            }
+          };
+        });
+      }
+      
+      // Função customizada para prompt
+      function customPrompt(message, title = 'Entrada', defaultValue = '', isPassword = false) {
+        return new Promise((resolve) => {
+          const modal = document.getElementById('custom-prompt-modal');
+          const titleEl = document.getElementById('custom-prompt-title');
+          const messageEl = document.getElementById('custom-prompt-message');
+          const inputEl = document.getElementById('custom-prompt-input');
+          const okBtn = document.getElementById('custom-prompt-ok');
+          const cancelBtn = document.getElementById('custom-prompt-cancel');
+          const closeBtn = document.getElementById('custom-prompt-close');
+          
+          titleEl.textContent = title;
+          messageEl.textContent = message;
+          inputEl.value = defaultValue;
+          
+          // Define o tipo do input (password ou text)
+          if (isPassword) {
+            inputEl.type = 'password';
+          } else {
+            inputEl.type = 'text';
+          }
+          
+          modal.classList.remove('hidden');
+          
+          // Foca no input e seleciona o texto
+          setTimeout(() => {
+            inputEl.focus();
+            inputEl.select();
+          }, 100);
+          
+          const closeModal = (result) => {
+            modal.classList.add('hidden');
+            inputEl.value = '';
+            // Reseta o tipo para text após fechar
+            inputEl.type = 'text';
+            resolve(result);
+          };
+          
+          const handleOk = () => {
+            closeModal(inputEl.value);
+          };
+          
+          okBtn.onclick = handleOk;
+          cancelBtn.onclick = () => closeModal(null);
+          closeBtn.onclick = () => closeModal(null);
+          
+          // Enter no input também confirma
+          inputEl.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+              handleOk();
+            }
+          };
+          
+          // Fecha ao clicar no overlay (retorna null)
+          modal.onclick = (e) => {
+            if (e.target === modal) {
+              closeModal(null);
+            }
+          };
+        });
+      }
+      
+      // Substitui as funções nativas (mantém compatibilidade)
+      window.alert = customAlert;
+      window.confirm = customConfirm;
+      window.prompt = customPrompt;
+      
+      // --- Constantes e Estado da Aplicação ---
+  const textoInicial = `Qual e o seu maior sonho?
+Para onde viajaria no tempo?
+Qual sua comida favorita?
+Qual superpoder escolheria?
+Qual foi seu melhor dia?
+Qual seu filme preferido?
+O que te faz feliz?
+Onde gostaria de ir?`;
+      const cores = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
+        '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
+      ];
+      
+      // Variáveis de estado
+      let textoPerguntas = textoInicial;
+      let perguntas = [];
+      let spinning = false;
+      let rotation = 0;
+      let selectedQuestion = null;
+      let sidebarOpen = false;
+      
+      // Variáveis dos Jogos
+      let currentGame = null; // 'race', 'force'
+      let battleModeEnabled = false; // Toggle do modo Battle (pode ser usado com qualquer jogo)
+      let raceScoreCount = 0;
+      let raceProgressPercent = 0;
+      let totalPerguntasIniciais = 0; // Total de perguntas quando o jogo começou
+      
+      // Variáveis do Jogo da Forca
+      let forceErrorCount = 0; // Contador de erros no jogo da forca (modo single player)
+      let forceErrorCount1 = 0; // Contador de erros do Jogador 1 (modo Battle)
+      let forceErrorCount2 = 0; // Contador de erros do Jogador 2 (modo Battle)
+      const MAX_FORCE_ERRORS = 6; // Máximo de 6 partes do boneco
+      
+      // Variáveis do Modo Battle
+      let raceScoreCount1 = 0; // Jogador 1 - acertos
+      let raceScoreCount2 = 0; // Jogador 2 - acertos
+      let raceErrosCount1 = 0; // Jogador 1 - erros
+      let raceErrosCount2 = 0; // Jogador 2 - erros
+      let raceProgressPercent1 = 0;
+      let raceProgressPercent2 = 0;
+      let currentPlayer = 1; // 1 ou 2
+      let perguntasErradas = 0; // Conta perguntas erradas para ajustar o cálculo
+      let perguntasJogador1 = []; // Perguntas do jogador 1 (50%)
+      let perguntasJogador2 = []; // Perguntas do jogador 2 (50%)
+      
+      // Variáveis do Jogo da Palavra Secreta
+      let wordSecret = ''; // Palavra secreta atual
+      let wordDiscovered = []; // Array com as letras descobertas (true/false para cada posição)
+      let wordTriedLetters = []; // Array com as letras já tentadas
+      let wordScore = 0; // Contador de acertos (modo single player)
+      let wordScore1 = 0; // Contador de acertos do Jogador 1 (modo Battle)
+      let wordScore2 = 0; // Contador de acertos do Jogador 2 (modo Battle)
+      let wordCanTryLetter = false; // Flag se pode tentar uma letra (após acertar)
+      let wordList = []; // Lista de palavras fornecidas pelo usuário
+      let wordListIndex = 0; // Índice atual na lista de palavras
+      
+      // Variáveis de Compartilhamento
+      let gameSessionId = null; // ID da sessão do jogo compartilhado
+      let isHost = false; // Se é o criador do jogo (host)
+      let syncInterval = null; // Intervalo para sincronizar estado
+      let jsonBinId = null; // ID do bin no JSONBin.io para sincronização entre dispositivos
+
+      // --- Referências do DOM ---
+      const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+      const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const editorContainer = document.getElementById('editor-container');
+      const questionsTextarea = document.getElementById('questions-textarea');
+      const questionsCount = document.getElementById('questions-count');
+      
+      const rouletteContainer = document.getElementById('roulette-container');
+      // CORREÇÃO: Esta referência estava a falhar porque o elemento não existia
+      const wheelWrapper = document.getElementById('wheel-wrapper'); 
+      const wheelSectors = document.getElementById('wheel-sectors');
+      
+      const spinBtn = document.getElementById('spin-btn');
+      
+      const finishedContainer = document.getElementById('finished-container');
+      const restartBtn = document.getElementById('restart-btn');
+      
+      const modalContainer = document.getElementById('modal-container');
+      const modalQuestionNum = document.getElementById('modal-question-num');
+      const modalQuestionText = document.getElementById('modal-question-text');
+      const modalCorrectBtn = document.getElementById('modal-correct-btn');
+      const modalWrongBtn = document.getElementById('modal-wrong-btn');
+      // CORREÇÃO: Adicionada a referência para o novo 'id'
+      const modalContentDiv = document.getElementById('modal-content-div');
+
+      // Referências dos Jogos
+      const raceGameBtn = document.getElementById('race-game-btn');
+      const forceGameBtn = document.getElementById('force-game-btn');
+      const wordGameBtn = document.getElementById('word-game-btn');
+      const noGameBtn = document.getElementById('no-game-btn');
+      const battleModeToggle = document.getElementById('battle-mode-toggle');
+      const raceGameContainer = document.getElementById('race-game-container');
+      const forceGameContainer = document.getElementById('force-game-container');
+      const wordGameContainer = document.getElementById('word-game-container');
+      const forceErrors = document.getElementById('force-errors');
+      const forceErrorCountDisplay = document.getElementById('force-error-count');
+      const forceSinglePlayer = document.getElementById('force-single-player');
+      const forceBattleMode = document.getElementById('force-battle-mode');
+      const forceError1 = document.getElementById('force-error-1');
+      const forceError2 = document.getElementById('force-error-2');
+      const forceErrorCount1Display = document.getElementById('force-error-count-1');
+      const forceErrorCount2Display = document.getElementById('force-error-count-2');
+      const raceCar = document.getElementById('race-car-1'); // Carro 1 (ou único no modo race)
+      const raceCar1 = document.getElementById('race-car-1'); // Jogador 1
+      const raceCar2 = document.getElementById('race-car-2'); // Jogador 2
+      const smokeCar1 = document.getElementById('smoke-car-1'); // Fumaça do carro 1
+      const smokeCar2 = document.getElementById('smoke-car-2'); // Fumaça do carro 2
+      const raceProgress = document.getElementById('race-progress');
+      const raceScore = document.getElementById('race-score');
+      const raceSinglePlayer = document.getElementById('race-single-player');
+      const raceBattleMode = document.getElementById('race-battle-mode');
+      const raceScore1 = document.getElementById('race-score-1');
+      const raceScore2 = document.getElementById('race-score-2');
+      const raceProgress1 = document.getElementById('race-progress-1');
+      const raceProgress2 = document.getElementById('race-progress-2');
+      const currentPlayerDisplay = document.getElementById('current-player');
+      
+      // Referências do Jogo da Palavra Secreta
+      const wordSinglePlayer = document.getElementById('word-single-player');
+      const wordBattleMode = document.getElementById('word-battle-mode');
+      const wordDisplay = document.getElementById('word-display');
+      const wordDisplayBattle = document.getElementById('word-display-battle');
+      const wordLetterInput = document.getElementById('word-letter-input');
+      const wordLetterInputBattle = document.getElementById('word-letter-input-battle');
+      const wordTryLetterBtn = document.getElementById('word-try-letter-btn');
+      const wordTryLetterBtnBattle = document.getElementById('word-try-letter-btn-battle');
+      const wordTriedLettersDisplay = document.getElementById('word-tried-letters');
+      const wordTriedLettersBattleDisplay = document.getElementById('word-tried-letters-battle');
+      const wordMessage = document.getElementById('word-message');
+      const wordMessageBattle = document.getElementById('word-message-battle');
+      const wordScoreDisplay = document.getElementById('word-score');
+      const wordScore1Display = document.getElementById('word-score-1');
+      const wordScore2Display = document.getElementById('word-score-2');
+      const wordProgress = document.getElementById('word-progress');
+      
+      // Referências de Compartilhamento
+      const shareGameBtn = document.getElementById('share-game-btn');
+      const shareModal = document.getElementById('share-modal');
+      const shareModalClose = document.getElementById('share-modal-close');
+      const shareModalOk = document.getElementById('share-modal-ok');
+      const shareLinkInput = document.getElementById('share-link-input');
+      const shareCopyBtn = document.getElementById('share-copy-btn');
+
+      // --- Funções ---
+
+      /**
+       * Desenha os setores da roleta no SVG
+       */
+      function renderWheel() {
+        // Agora o wheelSectors não deve ser null
+        wheelSectors.innerHTML = ''; // Limpa os setores antigos
+        if (perguntas.length === 0) return;
+
+        const sectorAngle = 360 / perguntas.length;
+
+        perguntas.forEach((item, i) => {
+          const angulo = sectorAngle * i;
+          const anguloRad = (angulo * Math.PI) / 180;
+          const proximoAngulo = (sectorAngle * (i + 1) * Math.PI) / 180;
+
+          const x1 = 100 + 95 * Math.cos(anguloRad - Math.PI / 2);
+          const y1 = 100 + 95 * Math.sin(anguloRad - Math.PI / 2);
+          const x2 = 100 + 95 * Math.cos(proximoAngulo - Math.PI / 2);
+          const y2 = 100 + 95 * Math.sin(proximoAngulo - Math.PI / 2);
+
+          const anguloMeio = angulo + sectorAngle / 2;
+          const anguloMeioRad = (anguloMeio * Math.PI) / 180;
+          const textX = 100 + 65 * Math.cos(anguloMeioRad - Math.PI / 2);
+          const textY = 100 + 65 * Math.sin(anguloMeioRad - Math.PI / 2);
+
+          const tamanhoFonte = perguntas.length <= 8 ? 24 :
+                                perguntas.length <= 12 ? 20 :
+                                perguntas.length <= 16 ? 16 :
+                                perguntas.length <= 20 ? 14 : 12;
+
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', `M 100 100 L ${x1} ${y1} A 95 95 0 0 1 ${x2} ${y2} Z`);
+          path.setAttribute('fill', cores[i % cores.length]);
+          path.setAttribute('stroke', 'white');
+          path.setAttribute('stroke-width', '2');
+          
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', textX);
+          text.setAttribute('y', textY);
+          text.setAttribute('fill', 'white');
+          text.setAttribute('font-size', tamanhoFonte);
+          text.setAttribute('font-weight', 'bold');
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('dominant-baseline', 'middle');
+          text.textContent = item.num;
+
+          g.appendChild(path);
+          g.appendChild(text);
+          wheelSectors.appendChild(g);
+        });
+      }
+
+      /**
+       * Atualiza a visibilidade dos containers principais (roleta vs. fim de jogo)
+       */
+      function updateUI() {
+        if (perguntas.length > 0) {
+          rouletteContainer.classList.remove('hidden');
+          // spinBtn.classList.remove('hidden'); // Esta linha já não é necessária
+          finishedContainer.classList.add('hidden');
+        } else {
+          rouletteContainer.classList.add('hidden');
+          // spinBtn.classList.add('hidden'); // Esta linha já não é necessária
+          finishedContainer.classList.remove('hidden');
+          
+          // Se o jogo de corrida estiver ativo, atualiza o progresso final
+          if (currentGame === 'race') {
+            // Atualiza a posição do carro baseado no estado atual
+            updateRaceCarPosition();
+            
+            // Se todas foram acertadas, o carro está na chegada
+            if (raceProgressPercent >= 100 && perguntas.length === 0) {
+              setTimeout(async () => {
+                await triggerVictoryAnimation();
+              }, 500);
+            }
+          } else if (battleModeEnabled && currentGame) {
+            // Atualiza as posições dos carros no modo Battle
+            updateBattleCarPositions();
+          }
+        }
+      }
+
+      /**
+       * Processa o texto da textarea, atualiza o array de perguntas,
+       * renderiza a roleta e atualiza a UI.
+       */
+      function updatePerguntas() {
+        // Divide por quebras de linha (aceita CRLF ou LF) e ignora linhas em branco
+        const perguntasAnteriores = perguntas.length;
+        // Divide por quebra de linha (suporta \n, \r\n, ou \r)
+        // Usa split com regex que captura quebras de linha, não caracteres individuais
+        const perguntasTexto = textoPerguntas
+          .split(/\r\n|\r|\n/)
+          .map(p => p.trim())
+          .filter(p => p.length > 0);
+        
+        // No modo Battle, preserva os números originais das perguntas existentes
+        if (battleModeEnabled && currentGame && perguntas.length > 0) {
+          // Mapeia perguntas existentes para preservar números
+          const perguntasAtualizadas = perguntasTexto.map(texto => {
+            // Procura se essa pergunta já existe (mesmo texto)
+            const perguntaExistente = perguntas.find(p => p.pergunta === texto);
+            if (perguntaExistente) {
+              return { num: perguntaExistente.num, pergunta: texto };
+            }
+            // Se é uma nova pergunta, atribui um número maior que o máximo existente
+            const maxNum = Math.max(...perguntas.map(p => p.num), 0);
+            return { num: maxNum + 1, pergunta: texto };
+          });
+          perguntas = perguntasAtualizadas;
+        } else {
+          // Para outros modos ou quando não há perguntas anteriores, recalcula normalmente
+          perguntas = perguntasTexto.map((p, i) => ({ num: i + 1, pergunta: p }));
+        }
+        
+        questionsCount.textContent = perguntas.length;
+        
+        // Se o jogo de corrida está ativo, recalcula a posição do carro em tempo real
+        if (currentGame === 'race') {
+          // Recalcula o progresso do carro baseado no novo total de perguntas
+          // O carro se adapta automaticamente quando perguntas são adicionadas ou removidas
+          updateRaceCarPosition();
+        } else if (battleModeEnabled && currentGame) {
+          // Recalcula as posições dos carros no modo Battle
+          // Apenas recalcula se o número de perguntas mudou (adicionadas ou removidas)
+          // Não recalculamos quando a pergunta é removida por erro, apenas quando é editada
+          const diferenca = perguntas.length - perguntasAnteriores;
+          if (diferenca !== 0) {
+            // Apenas recalcula se perguntas foram adicionadas ou removidas manualmente
+            updateBattleCarPositions();
+          }
+        }
+        
+        renderWheel();
+        updateUI();
+        
+        // Salva o estado se houver sessão ativa
+        if (gameSessionId) {
+          saveGameState();
+        }
+      }
+
+      /**
+       * Mostra ou esconde o modal da pergunta.
+       */
+      function showModal(question) {
+        // --- LÓGICA DE FECHAR O MODAL ---
+        // Se estamos fechando o modal (question é null) E havia uma pergunta selecionada...
+          if (!question && selectedQuestion) {
+          // ...então agora é a hora de remover a pergunta da lista.
+          const novasPerguntas = perguntas.filter((p) => p.num !== selectedQuestion.num);
+          // Atualiza o texto com quebras de linha
+          textoPerguntas = novasPerguntas.map(p => p.pergunta).join('\n');
+          questionsTextarea.value = textoPerguntas; // Atualiza o textarea
+
+          // No modo Battle, também remove a pergunta do conjunto do jogador que a respondeu
+          // Verifica qual jogador tem a pergunta no seu conjunto (antes da alternância)
+          if (battleModeEnabled && currentGame) {
+            const pertenceJogador1 = perguntasJogador1.some(p => p.num === selectedQuestion.num);
+            const pertenceJogador2 = perguntasJogador2.some(p => p.num === selectedQuestion.num);
+            
+            if (pertenceJogador1) {
+              perguntasJogador1 = perguntasJogador1.filter(p => p.num !== selectedQuestion.num);
+            }
+            if (pertenceJogador2) {
+              perguntasJogador2 = perguntasJogador2.filter(p => p.num !== selectedQuestion.num);
+            }
+          }
+
+          // Atualiza o array de perguntas e re-renderiza a roleta (com um item a menos)
+          updatePerguntas();
+
+          // --- ADIÇÃO CRÍTICA (A CORREÇÃO) ---
+          // Após a roleta ser redesenhada (com um item a menos),
+          // resetamos a rotação do wrapper para 0.
+          // Como a transição está 'none' (definida no fim do giro), 
+          // isto é instantâneo e invisível.
+          // A roleta redesenhada agora está visualmente a 0 graus, pronta para o próximo giro.
+          rotation = 0; // Reseta a variável de estado
+          // wheelWrapper pode ser nulo se não houver perguntas
+          if (wheelWrapper) {
+            wheelWrapper.style.transform = 'rotate(0deg)'; // Reseta o CSS
+          }
+          // --- FIM DA ADIÇÃO ---
+          // Nota: updateRaceProgress() agora é chamado apenas quando o usuário clica em "Acertou"
+        }
+        // --- FIM DA LÓGICA DE FECHAR ---
+
+        // Atualiza a pergunta selecionada (seja para null ou um objeto)
+        selectedQuestion = question; 
+        
+        if (question) {
+          // Lógica para ABRIR o modal
+          modalQuestionNum.textContent = `#${question.num}`;
+          modalQuestionText.textContent = question.pergunta;
+          modalContainer.classList.remove('hidden');
+          // CORREÇÃO: Usa a referência do 'id' para adicionar a classe de animação
+          if (modalContentDiv) {
+            modalContentDiv.classList.add('modal-content');
+          }
+        } else {
+          // Lógica para FECHAR o modal (visualmente)
+          modalContainer.classList.add('hidden');
+          // CORREÇÃO: Usa a referência do 'id' para remover a classe de animação
+          if (modalContentDiv) {
+            modalContentDiv.classList.remove('modal-content');
+          }
+        }
+      }
+
+      // --- Funções de Compartilhamento ---
+      
+      /**
+       * Gera um ID único para a sessão do jogo
+       */
+      function generateGameSessionId() {
+        return 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      }
+      
+      /**
+       * Salva o estado atual do jogo no localStorage e no serviço de compartilhamento
+       */
+      async function saveGameState() {
+        if (!gameSessionId) return;
+        
+        const gameState = {
+          perguntas: perguntas,
+          textoPerguntas: textoPerguntas,
+          currentGame: currentGame,
+          battleModeEnabled: battleModeEnabled,
+          raceScoreCount: raceScoreCount,
+          raceProgressPercent: raceProgressPercent,
+          totalPerguntasIniciais: totalPerguntasIniciais,
+          forceErrorCount: forceErrorCount,
+          forceErrorCount1: forceErrorCount1,
+          forceErrorCount2: forceErrorCount2,
+          raceScoreCount1: raceScoreCount1,
+          raceScoreCount2: raceScoreCount2,
+          raceErrosCount1: raceErrosCount1,
+          raceErrosCount2: raceErrosCount2,
+          raceProgressPercent1: raceProgressPercent1,
+          raceProgressPercent2: raceProgressPercent2,
+          currentPlayer: currentPlayer,
+          perguntasJogador1: perguntasJogador1,
+          perguntasJogador2: perguntasJogador2,
+          wordSecret: wordSecret,
+          wordDiscovered: wordDiscovered,
+          wordTriedLetters: wordTriedLetters,
+          wordScore: wordScore,
+          wordScore1: wordScore1,
+          wordScore2: wordScore2,
+          wordList: wordList,
+          wordListIndex: wordListIndex,
+          lastUpdate: Date.now()
+        };
+        
+        // Salva no localStorage (para sincronização local)
+        localStorage.setItem('gameState_' + gameSessionId, JSON.stringify(gameState));
+        
+        // Nota: A sincronização entre diferentes computadores/redes funciona através da URL codificada
+        // O localStorage é usado apenas para cache local e sincronização quando ambos estão no mesmo navegador
+      }
+      
+      /**
+       * Carrega o estado do jogo do localStorage ou do serviço de compartilhamento
+       */
+      async function loadGameState() {
+        if (!gameSessionId) return false;
+        
+        let gameState = null;
+        
+        // Tenta carregar do localStorage primeiro (cache local, mais rápido)
+        const savedState = localStorage.getItem('gameState_' + gameSessionId);
+        if (savedState) {
+          try {
+            const parsed = JSON.parse(savedState);
+            // Verifica se o estado não está muito antigo (mais de 5 minutos)
+            const stateAge = Date.now() - (parsed.lastUpdate || 0);
+            if (stateAge < 300000) { // 5 minutos
+              gameState = parsed;
+            }
+          } catch (e) {
+            // Ignora erro de parse
+          }
+        }
+        
+        // Se não encontrou no localStorage ou está antigo, tenta do serviço online (se disponível)
+        // Nota: O serviço online está desabilitado por enquanto, usando apenas URL codificada
+        // Isso funciona entre diferentes computadores/redes através da URL
+        
+        if (!gameState) return false;
+        
+        try {
+          
+          // Restaura todas as variáveis
+          perguntas = gameState.perguntas || [];
+          textoPerguntas = gameState.textoPerguntas || textoInicial;
+          currentGame = gameState.currentGame || null;
+          battleModeEnabled = gameState.battleModeEnabled || false;
+          raceScoreCount = gameState.raceScoreCount || 0;
+          raceProgressPercent = gameState.raceProgressPercent || 0;
+          totalPerguntasIniciais = gameState.totalPerguntasIniciais || 0;
+          forceErrorCount = gameState.forceErrorCount || 0;
+          forceErrorCount1 = gameState.forceErrorCount1 || 0;
+          forceErrorCount2 = gameState.forceErrorCount2 || 0;
+          raceScoreCount1 = gameState.raceScoreCount1 || 0;
+          raceScoreCount2 = gameState.raceScoreCount2 || 0;
+          raceErrosCount1 = gameState.raceErrosCount1 || 0;
+          raceErrosCount2 = gameState.raceErrosCount2 || 0;
+          raceProgressPercent1 = gameState.raceProgressPercent1 || 0;
+          raceProgressPercent2 = gameState.raceProgressPercent2 || 0;
+          currentPlayer = gameState.currentPlayer || 1;
+          perguntasJogador1 = gameState.perguntasJogador1 || [];
+          perguntasJogador2 = gameState.perguntasJogador2 || [];
+          wordSecret = gameState.wordSecret || '';
+          wordDiscovered = gameState.wordDiscovered || [];
+          wordTriedLetters = gameState.wordTriedLetters || [];
+          wordScore = gameState.wordScore || 0;
+          wordScore1 = gameState.wordScore1 || 0;
+          wordScore2 = gameState.wordScore2 || 0;
+          wordList = gameState.wordList || [];
+          wordListIndex = gameState.wordListIndex || 0;
+          
+          // Atualiza a UI
+          questionsTextarea.value = textoPerguntas;
+          updateQuestionsCount();
+          renderWheel();
+          updateUI();
+          
+          // Atualiza o toggle do battle mode
+          if (battleModeToggle) {
+            battleModeToggle.checked = battleModeEnabled;
+          }
+          
+          // Atualiza os jogos se necessário
+          if (currentGame === 'race') {
+            if (battleModeEnabled) {
+              updateBattleCarPositions();
+            } else {
+              updateRaceCarPosition();
+            }
+          }
+          
+          return true;
+        } catch (e) {
+          console.error('Erro ao carregar estado do jogo:', e);
+          return false;
+        }
+      }
+      
+      /**
+       * Cria um bin no serviço de compartilhamento online (opcional)
+       * Se falhar, o sistema ainda funciona com dados codificados na URL
+       */
+      async function createOnlineBin() {
+        if (jsonBinId) return jsonBinId; // Já existe
+        
+        // Tenta usar um serviço público de compartilhamento de dados
+        // Se falhar, o sistema ainda funciona com dados na URL
+        try {
+          // Usa um serviço de pastebin público ou similar
+          // Por enquanto, retorna null e usa apenas URL codificada
+          // Isso garante que funcione mesmo sem serviço online
+          return null;
+        } catch (e) {
+          console.error('Erro ao criar bin online:', e);
+          return null;
+        }
+      }
+      
+      /**
+       * Cria um link compartilhável para o jogo
+       */
+      async function createShareableLink() {
+        if (!gameSessionId) {
+          // Cria uma nova sessão se não existir
+          gameSessionId = generateGameSessionId();
+          isHost = true;
+          await saveGameState();
+        }
+        
+        // Cria um bin online para sincronização entre dispositivos
+        if (isHost && !jsonBinId) {
+          await createOnlineBin();
+        }
+        
+        const currentUrl = window.location.origin + window.location.pathname;
+        
+        // Codifica TODOS os dados do jogo na URL para funcionar entre diferentes computadores/redes
+        const gameData = {
+          perguntas: perguntas.map(p => p.pergunta),
+          textoPerguntas: textoPerguntas,
+          currentGame: currentGame,
+          battleModeEnabled: battleModeEnabled,
+          raceScoreCount: raceScoreCount,
+          raceProgressPercent: raceProgressPercent,
+          totalPerguntasIniciais: totalPerguntasIniciais,
+          forceErrorCount: forceErrorCount,
+          forceErrorCount1: forceErrorCount1,
+          forceErrorCount2: forceErrorCount2,
+          raceScoreCount1: raceScoreCount1,
+          raceScoreCount2: raceScoreCount2,
+          raceErrosCount1: raceErrosCount1,
+          raceErrosCount2: raceErrosCount2,
+          raceProgressPercent1: raceProgressPercent1,
+          raceProgressPercent2: raceProgressPercent2,
+          currentPlayer: currentPlayer,
+          perguntasJogador1: perguntasJogador1.map(p => p.pergunta),
+          perguntasJogador2: perguntasJogador2.map(p => p.pergunta),
+          wordSecret: wordSecret,
+          wordDiscovered: wordDiscovered,
+          wordTriedLetters: wordTriedLetters,
+          wordScore: wordScore,
+          wordScore1: wordScore1,
+          wordScore2: wordScore2,
+          wordList: wordList,
+          wordListIndex: wordListIndex,
+          binId: jsonBinId // Inclui o ID do bin online se disponível
+        };
+        
+        try {
+          // Usa compressão simples para reduzir o tamanho da URL
+          const jsonString = JSON.stringify(gameData);
+          const encodedData = btoa(jsonString);
+          
+          // Se a URL ficar muito longa, divide em partes
+          const maxUrlLength = 2000; // Limite seguro para URLs
+          if (encodedData.length > maxUrlLength) {
+            // Se muito grande, codifica apenas dados essenciais
+            const essentialData = {
+              perguntas: perguntas.map(p => p.pergunta),
+              currentGame: currentGame,
+              battleModeEnabled: battleModeEnabled,
+              binId: jsonBinId
+            };
+            const essentialEncoded = btoa(JSON.stringify(essentialData));
+            // Codifica os parâmetros da URL para evitar problemas com caracteres especiais
+            return currentUrl + '?game=' + encodeURIComponent(gameSessionId) + '&data=' + encodeURIComponent(essentialEncoded) + (jsonBinId ? '&bin=' + encodeURIComponent(jsonBinId) : '');
+          }
+          
+          // Codifica os parâmetros da URL para evitar problemas com caracteres especiais
+          let shareUrl = currentUrl + '?game=' + encodeURIComponent(gameSessionId) + '&data=' + encodeURIComponent(encodedData);
+          if (jsonBinId) {
+            shareUrl += '&bin=' + encodeURIComponent(jsonBinId);
+          }
+          return shareUrl;
+        } catch (e) {
+          // Se falhar ao codificar, retorna URL simples com dados mínimos
+          const minimalData = {
+            perguntas: perguntas.map(p => p.pergunta),
+            currentGame: currentGame,
+            battleModeEnabled: battleModeEnabled
+          };
+          try {
+            const minimalEncoded = btoa(JSON.stringify(minimalData));
+            // Codifica os parâmetros da URL para evitar problemas com caracteres especiais
+            return currentUrl + '?game=' + encodeURIComponent(gameSessionId) + '&data=' + encodeURIComponent(minimalEncoded);
+          } catch (e2) {
+            return currentUrl + '?game=' + encodeURIComponent(gameSessionId);
+          }
+        }
+      }
+      
+      /**
+       * Atualiza a URL com o estado atual do jogo (para sincronização entre diferentes computadores/redes)
+       */
+      function updateUrlWithState() {
+        if (!isHost || !gameSessionId) return;
+        
+        // Atualiza a URL com o estado atual sem recarregar a página
+        const currentUrl = window.location.origin + window.location.pathname;
+        const gameData = {
+          perguntas: perguntas.map(p => p.pergunta),
+          textoPerguntas: textoPerguntas,
+          currentGame: currentGame,
+          battleModeEnabled: battleModeEnabled,
+          raceScoreCount: raceScoreCount,
+          raceProgressPercent: raceProgressPercent,
+          totalPerguntasIniciais: totalPerguntasIniciais,
+          forceErrorCount: forceErrorCount,
+          forceErrorCount1: forceErrorCount1,
+          forceErrorCount2: forceErrorCount2,
+          raceScoreCount1: raceScoreCount1,
+          raceScoreCount2: raceScoreCount2,
+          raceErrosCount1: raceErrosCount1,
+          raceErrosCount2: raceErrosCount2,
+          raceProgressPercent1: raceProgressPercent1,
+          raceProgressPercent2: raceProgressPercent2,
+          currentPlayer: currentPlayer,
+          perguntasJogador1: perguntasJogador1.map(p => p.pergunta),
+          perguntasJogador2: perguntasJogador2.map(p => p.pergunta),
+          wordSecret: wordSecret,
+          wordDiscovered: wordDiscovered,
+          wordTriedLetters: wordTriedLetters,
+          wordScore: wordScore,
+          wordScore1: wordScore1,
+          wordScore2: wordScore2,
+          wordList: wordList,
+          wordListIndex: wordListIndex
+        };
+        
+        try {
+          const encodedData = btoa(JSON.stringify(gameData));
+          const maxUrlLength = 2000;
+          if (encodedData.length <= maxUrlLength) {
+            // Codifica os parâmetros da URL para evitar problemas com caracteres especiais
+            const newUrl = currentUrl + '?game=' + encodeURIComponent(gameSessionId) + '&data=' + encodeURIComponent(encodedData) + (jsonBinId ? '&bin=' + encodeURIComponent(jsonBinId) : '');
+            window.history.replaceState({}, document.title, newUrl);
+          }
+        } catch (e) {
+          // Ignora erro de atualização de URL
+        }
+      }
+      
+      /**
+       * Inicia a sincronização do estado do jogo
+       */
+      function startGameSync() {
+        if (syncInterval) {
+          clearInterval(syncInterval);
+        }
+        
+        // Sincroniza a cada 2 segundos
+        syncInterval = setInterval(async () => {
+          if (isHost) {
+            // Host salva o estado e atualiza a URL
+            await saveGameState();
+            updateUrlWithState(); // Atualiza URL para que outros possam acessar o estado atual
+          } else {
+            // Cliente sempre recarrega da URL para pegar o estado mais recente do host
+            // Isso funciona entre diferentes computadores e redes
+            const urlParams = new URLSearchParams(window.location.search);
+            let urlData = urlParams.get('data');
+            
+            // Se não há dados na URL, tenta do localStorage
+            if (!urlData) {
+              const loaded = await loadGameState();
+              if (loaded) {
+                // Se carregou do localStorage, atualiza a URL com esses dados
+                updateUrlWithState();
+                return;
+              }
+            }
+            
+            // Se há dados na URL, recarrega deles
+            if (urlData) {
+              await loadInitialStateFromUrl(urlData);
+            }
+          }
+        }, 2000);
+      }
+      
+      /**
+       * Para a sincronização do estado do jogo
+       */
+      function stopGameSync() {
+        if (syncInterval) {
+          clearInterval(syncInterval);
+          syncInterval = null;
+        }
+      }
+      
+      /**
+       * Carrega o estado inicial da URL (quando não há localStorage)
+       */
+      async function loadInitialStateFromUrl(urlData) {
+        try {
+          if (!urlData || urlData.trim() === '') {
+            console.error('URL data está vazio');
+            return false;
+          }
+          
+          // Decodifica os dados da URL
+          // Nota: urlData pode já estar decodificado pelo URLSearchParams.get()
+          let gameData;
+          try {
+            // Tenta decodificar Base64 diretamente primeiro (caso já esteja decodificado do URI)
+            gameData = JSON.parse(atob(urlData));
+          } catch (decodeError) {
+            // Se falhar, tenta decodificar URI primeiro (caso ainda esteja codificado)
+            try {
+              const decodedData = decodeURIComponent(urlData);
+              gameData = JSON.parse(atob(decodedData));
+            } catch (e2) {
+              console.error('Erro ao decodificar URL:', decodeError, e2);
+              return false;
+            }
+          }
+          
+          if (!gameData || typeof gameData !== 'object') {
+            console.error('Dados decodificados inválidos');
+            return false;
+          }
+          
+          let loaded = false;
+          
+          // Restaura as perguntas (obrigatório para o jogo funcionar)
+          if (gameData.perguntas && Array.isArray(gameData.perguntas) && gameData.perguntas.length > 0) {
+            perguntas = gameData.perguntas.map((p, i) => ({ num: i + 1, pergunta: p }));
+            textoPerguntas = gameData.textoPerguntas || gameData.perguntas.join('\n');
+            if (questionsTextarea) {
+              questionsTextarea.value = textoPerguntas;
+            }
+            updateQuestionsCount();
+            renderWheel();
+            updateUI();
+            loaded = true;
+          }
+          
+          // Restaura configurações do jogo
+          if (gameData.currentGame) {
+            currentGame = gameData.currentGame;
+            loaded = true;
+          }
+          
+          if (gameData.battleModeEnabled !== undefined) {
+            battleModeEnabled = gameData.battleModeEnabled;
+            if (battleModeToggle) {
+              battleModeToggle.checked = battleModeEnabled;
+            }
+            loaded = true;
+          }
+          
+          // Restaura estado dos jogos se disponível
+          if (gameData.raceScoreCount !== undefined) { raceScoreCount = gameData.raceScoreCount; loaded = true; }
+          if (gameData.raceProgressPercent !== undefined) { raceProgressPercent = gameData.raceProgressPercent; loaded = true; }
+          if (gameData.totalPerguntasIniciais !== undefined) { totalPerguntasIniciais = gameData.totalPerguntasIniciais; loaded = true; }
+          if (gameData.forceErrorCount !== undefined) { forceErrorCount = gameData.forceErrorCount; loaded = true; }
+          if (gameData.forceErrorCount1 !== undefined) { forceErrorCount1 = gameData.forceErrorCount1; loaded = true; }
+          if (gameData.forceErrorCount2 !== undefined) { forceErrorCount2 = gameData.forceErrorCount2; loaded = true; }
+          if (gameData.raceScoreCount1 !== undefined) { raceScoreCount1 = gameData.raceScoreCount1; loaded = true; }
+          if (gameData.raceScoreCount2 !== undefined) { raceScoreCount2 = gameData.raceScoreCount2; loaded = true; }
+          if (gameData.raceErrosCount1 !== undefined) { raceErrosCount1 = gameData.raceErrosCount1; loaded = true; }
+          if (gameData.raceErrosCount2 !== undefined) { raceErrosCount2 = gameData.raceErrosCount2; loaded = true; }
+          if (gameData.raceProgressPercent1 !== undefined) { raceProgressPercent1 = gameData.raceProgressPercent1; loaded = true; }
+          if (gameData.raceProgressPercent2 !== undefined) { raceProgressPercent2 = gameData.raceProgressPercent2; loaded = true; }
+          if (gameData.currentPlayer !== undefined) { currentPlayer = gameData.currentPlayer; loaded = true; }
+          if (gameData.perguntasJogador1 && Array.isArray(gameData.perguntasJogador1)) {
+            perguntasJogador1 = gameData.perguntasJogador1.map((p, i) => ({ num: i + 1, pergunta: p }));
+            loaded = true;
+          }
+          if (gameData.perguntasJogador2 && Array.isArray(gameData.perguntasJogador2)) {
+            perguntasJogador2 = gameData.perguntasJogador2.map((p, i) => ({ num: i + 1, pergunta: p }));
+            loaded = true;
+          }
+          if (gameData.wordSecret) { wordSecret = gameData.wordSecret; loaded = true; }
+          if (gameData.wordDiscovered) { wordDiscovered = gameData.wordDiscovered; loaded = true; }
+          if (gameData.wordTriedLetters) { wordTriedLetters = gameData.wordTriedLetters; loaded = true; }
+          if (gameData.wordScore !== undefined) { wordScore = gameData.wordScore; loaded = true; }
+          if (gameData.wordScore1 !== undefined) { wordScore1 = gameData.wordScore1; loaded = true; }
+          if (gameData.wordScore2 !== undefined) { wordScore2 = gameData.wordScore2; loaded = true; }
+          if (gameData.wordList) { wordList = gameData.wordList; loaded = true; }
+          if (gameData.wordListIndex !== undefined) { wordListIndex = gameData.wordListIndex; loaded = true; }
+          
+          // Se há binId na URL, usa para sincronização online (opcional)
+          if (gameData.binId) {
+            jsonBinId = gameData.binId;
+            loaded = true;
+          }
+          
+          // Atualiza UI dos jogos se necessário
+          if (currentGame === 'race') {
+            if (battleModeEnabled) {
+              updateBattleCarPositions();
+            } else {
+              updateRaceCarPosition();
+            }
+          }
+          
+          // Se carregou algum dado, salva no localStorage para sincronização
+          if (loaded) {
+            await saveGameState();
+            return true;
+          }
+          
+          // Se não carregou nada, retorna false
+          return false;
+        } catch (e) {
+          console.error('Erro ao carregar dados da URL:', e);
+          return false;
+        }
+      }
+      
+      /**
+       * Verifica se há um parâmetro de jogo na URL e carrega o estado
+       */
+      async function checkUrlForGame() {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const gameId = urlParams.get('game');
+          let urlData = urlParams.get('data');
+          const binId = urlParams.get('bin');
+          
+          if (gameId) {
+            gameSessionId = gameId;
+            isHost = false; // Quem entra pelo link não é o host
+            
+            // Se há binId na URL, usa para sincronização online
+            if (binId) {
+              jsonBinId = binId;
+            }
+            
+            // Se não há urlData na query string, tenta pegar diretamente da URL
+            // Nota: URLSearchParams.get() já decodifica automaticamente
+            if (!urlData) {
+              const fullUrl = window.location.href;
+              const dataMatch = fullUrl.match(/[?&]data=([^&]+)/);
+              if (dataMatch) {
+                try {
+                  // Se pegamos via regex, precisamos decodificar manualmente
+                  urlData = decodeURIComponent(dataMatch[1]);
+                } catch (e) {
+                  // Se falhar, usa o valor original
+                  urlData = dataMatch[1];
+                }
+              }
+            }
+            
+            // Tenta carregar do localStorage primeiro (se já acessou antes no mesmo navegador)
+            const loadedFromStorage = await loadGameState();
+            
+            if (loadedFromStorage) {
+              customAlert('Você entrou no jogo compartilhado! O estado será sincronizado automaticamente.', 'Jogo Compartilhado');
+              startGameSync();
+              return;
+            }
+            
+            // Se não encontrou no localStorage, carrega da URL (funciona entre diferentes computadores/redes)
+            if (urlData) {
+              const loadedFromUrl = await loadInitialStateFromUrl(urlData);
+              
+              if (loadedFromUrl) {
+                customAlert('Você entrou no jogo compartilhado! O estado será sincronizado automaticamente.', 'Jogo Compartilhado');
+                startGameSync();
+                return;
+              } else {
+                console.error('Falha ao carregar dados da URL. urlData:', urlData ? urlData.substring(0, 100) + '...' : 'vazio');
+              }
+            }
+            
+            // Se chegou aqui, não conseguiu carregar
+            customAlert('Não foi possível carregar o jogo compartilhado. Verifique se o link está correto e completo.', 'Erro');
+            window.history.replaceState({}, document.title, window.location.pathname);
+            gameSessionId = null;
+            isHost = null;
+          }
+        } catch (e) {
+          console.error('Erro ao verificar URL do jogo:', e);
+          customAlert('Erro ao carregar o jogo compartilhado. Tente novamente.', 'Erro');
+        }
+      }
+      
+      /**
+       * Mostra o modal de compartilhamento
+       */
+      async function showShareModal() {
+        const shareUrl = await createShareableLink();
+        shareLinkInput.value = shareUrl;
+        shareModal.classList.remove('hidden');
+        
+        // Inicia a sincronização se ainda não estiver ativa
+        if (!syncInterval) {
+          startGameSync();
+        }
+      }
+      
+      /**
+       * Fecha o modal de compartilhamento
+       */
+      function closeShareModal() {
+        shareModal.classList.add('hidden');
+      }
+
+      // --- Funções de Animação de Vitória ---
+      
+      /**
+       * Cria e anima balões subindo
+       */
+      function createBalloons() {
+        const container = document.getElementById('victory-effects');
+        const colors = ['#FF6B9D', '#C44569', '#FFA07A', '#FFD700', '#FF6347', '#9370DB', '#00CED1', '#FF1493'];
+        const balloonCount = 20;
+        
+        for (let i = 0; i < balloonCount; i++) {
+          const balloon = document.createElement('div');
+          balloon.className = 'balloon';
+          
+          // Posição aleatória na parte inferior da tela
+          const startX = Math.random() * 100;
+          const driftX = (Math.random() - 0.5) * 100;
+          const driftRot = (Math.random() - 0.5) * 20;
+          
+          balloon.style.left = startX + '%';
+          balloon.style.bottom = '-100px';
+          balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          balloon.style.setProperty('--drift-x', driftX + 'px');
+          balloon.style.setProperty('--drift-rot', driftRot + 'deg');
+          balloon.style.animationDelay = (Math.random() * 2) + 's';
+          
+          container.appendChild(balloon);
+          
+          // Remove após a animação
+          setTimeout(() => {
+            if (balloon.parentNode) {
+              balloon.parentNode.removeChild(balloon);
+            }
+          }, 10000);
+        }
+      }
+      
+      /**
+       * Cria e anima fogos de artifício
+       */
+      function createFireworks() {
+        const container = document.getElementById('victory-effects');
+        const fireworkCount = 3;
+        
+        for (let i = 0; i < fireworkCount; i++) {
+          const firework = document.createElement('div');
+          firework.className = 'firework';
+          firework.style.left = (20 + i * 30) + '%';
+          firework.style.top = '50%';
+          
+          container.appendChild(firework);
+          
+          // Remove após a animação
+          setTimeout(() => {
+            if (firework.parentNode) {
+              firework.parentNode.removeChild(firework);
+            }
+          }, 2000);
+        }
+      }
+      
+      /**
+       * Cria e anima confetes caindo
+       */
+      function createConfetti() {
+        const container = document.getElementById('victory-effects');
+        const colors = ['#FF6B9D', '#C44569', '#FFA07A', '#FFD700', '#FF6347', '#9370DB', '#00CED1', '#FF1493', '#32CD32', '#FF4500'];
+        const confettiCount = 100;
+        
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          
+          const startX = Math.random() * 100;
+          const delay = Math.random() * 2;
+          const duration = 2 + Math.random() * 2;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          
+          confetti.style.left = startX + '%';
+          confetti.style.top = '-10px';
+          confetti.style.setProperty('--confetti-color', color);
+          confetti.style.animationDelay = delay + 's';
+          confetti.style.animationDuration = duration + 's';
+          
+          container.appendChild(confetti);
+          
+          // Remove após a animação
+          setTimeout(() => {
+            if (confetti.parentNode) {
+              confetti.parentNode.removeChild(confetti);
+            }
+          }, (delay + duration) * 1000);
+        }
+      }
+      
+      /**
+       * Cria o texto animado de vitória
+       */
+      function createVictoryText() {
+        const container = document.getElementById('victory-effects');
+        
+        const victoryText = document.createElement('div');
+        victoryText.className = 'victory-text';
+        victoryText.textContent = 'Parabéns pela vitória!';
+        
+        container.appendChild(victoryText);
+        
+        // Remove após 5 segundos
+        setTimeout(() => {
+          if (victoryText.parentNode) {
+            victoryText.style.transition = 'opacity 0.5s ease-out';
+            victoryText.style.opacity = '0';
+            setTimeout(() => {
+              if (victoryText.parentNode) {
+                victoryText.parentNode.removeChild(victoryText);
+              }
+            }, 500);
+          }
+        }, 5000);
+      }
+      
+      /**
+       * Dispara todas as animações de vitória
+       * Retorna uma Promise que resolve após a animação terminar
+       */
+      function triggerVictoryAnimation() {
+        // Limpa qualquer animação anterior
+        const container = document.getElementById('victory-effects');
+        container.innerHTML = '';
+        
+        // Cria os efeitos
+        createVictoryText();
+        createBalloons();
+        createFireworks();
+        createConfetti();
+        
+        // Retorna uma Promise que resolve após 5 segundos (duração da animação)
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve();
+          }, 5000);
+        });
+      }
+
+      /**
+       * Cria o texto animado de derrota
+       */
+      function createDefeatText() {
+        const container = document.getElementById('victory-effects');
+        
+        const defeatText = document.createElement('div');
+        defeatText.className = 'defeat-text';
+        defeatText.textContent = 'Game Over';
+        
+        container.appendChild(defeatText);
+        
+        // Remove após 4 segundos
+        setTimeout(() => {
+          if (defeatText.parentNode) {
+            defeatText.style.transition = 'opacity 0.5s ease-out';
+            defeatText.style.opacity = '0';
+            setTimeout(() => {
+              if (defeatText.parentNode) {
+                defeatText.parentNode.removeChild(defeatText);
+              }
+            }, 500);
+          }
+        }, 4000);
+      }
+
+      /**
+       * Cria overlay escuro para derrota
+       */
+      function createDefeatOverlay() {
+        const container = document.getElementById('victory-effects');
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'defeat-overlay';
+        
+        container.appendChild(overlay);
+        
+        // Remove após 4 segundos
+        setTimeout(() => {
+          if (overlay.parentNode) {
+            overlay.style.transition = 'opacity 0.5s ease-out';
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+              if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+              }
+            }, 500);
+          }
+        }, 4000);
+      }
+
+      /**
+       * Cria efeito de raio/lightning para derrota
+       */
+      function createDefeatLightning() {
+        const container = document.getElementById('victory-effects');
+        
+        const lightning = document.createElement('div');
+        lightning.className = 'defeat-lightning';
+        
+        container.appendChild(lightning);
+        
+        // Remove após 4 segundos
+        setTimeout(() => {
+          if (lightning.parentNode) {
+            lightning.style.transition = 'opacity 0.5s ease-out';
+            lightning.style.opacity = '0';
+            setTimeout(() => {
+              if (lightning.parentNode) {
+                lightning.parentNode.removeChild(lightning);
+              }
+            }, 500);
+          }
+        }, 4000);
+      }
+
+      /**
+       * Dispara todas as animações de derrota
+       * Retorna uma Promise que resolve após a animação terminar
+       */
+      function triggerDefeatAnimation() {
+        // Limpa qualquer animação anterior
+        const container = document.getElementById('victory-effects');
+        container.innerHTML = '';
+        
+        // Cria os efeitos de derrota
+        createDefeatOverlay();
+        createDefeatLightning();
+        createDefeatText();
+        
+        // Retorna uma Promise que resolve após 4 segundos (duração da animação)
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve();
+          }, 4000);
+        });
+      }
+
+      // --- Event Handlers ---
+
+      // Girar a Roleta
+      spinBtn.addEventListener('click', () => {
+        if (spinning || perguntas.length === 0) return;
+
+        spinning = true;
+        spinBtn.disabled = true;
+        spinBtn.textContent = 'Girar';
+        
+        // Esconde o modal se estiver aberto (não deve acontecer, mas por segurança)
+        // Esta chamada é segura, pois selectedQuestion será null ou o reset não ocorrerá
+        showModal(null); 
+        
+        // Fecha o menu lateral se estiver aberto
+        if (sidebarOpen) {
+          closeSidebar();
+        }
+        
+        // No modo Battle, cada jogador só recebe perguntas do seu próprio conjunto
+        let perguntasAtuais = [];
+        if (battleModeEnabled && currentGame) {
+          // Verifica se há perguntas disponíveis para qualquer jogador
+          const perguntasJ1Disponiveis = perguntas.filter(p => 
+            perguntasJogador1.some(pj => pj.num === p.num)
+          );
+          const perguntasJ2Disponiveis = perguntas.filter(p => 
+            perguntasJogador2.some(pj => pj.num === p.num)
+          );
+          
+          // Seleciona apenas das perguntas do jogador atual que ainda estão disponíveis
+          const perguntasJogadorAtual = currentPlayer === 1 ? perguntasJogador1 : perguntasJogador2;
+          perguntasAtuais = currentPlayer === 1 ? perguntasJ1Disponiveis : perguntasJ2Disponiveis;
+          
+          // Se não há perguntas disponíveis para este jogador, alterna para o outro jogador
+          if (perguntasAtuais.length === 0) {
+            // Alterna o jogador e tenta novamente
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            perguntasAtuais = currentPlayer === 1 ? perguntasJ1Disponiveis : perguntasJ2Disponiveis;
+            
+            // Atualiza o display do jogador atual
+            if (currentPlayerDisplay) {
+              if (currentPlayer === 1) {
+                currentPlayerDisplay.textContent = 'Jogador 1';
+                currentPlayerDisplay.className = 'font-bold text-red-600';
+              } else {
+                currentPlayerDisplay.textContent = 'Jogador 2';
+                currentPlayerDisplay.className = 'font-bold text-blue-600';
+              }
+            }
+            
+            // Se nenhum jogador tem perguntas disponíveis, verifica se o jogo terminou
+            if (perguntasAtuais.length === 0) {
+              // Verifica se ainda há perguntas na roleta principal
+              if (perguntas.length > 0) {
+                // Há perguntas na roleta mas não estão nos conjuntos dos jogadores
+                // Isso pode indicar uma dessincronização - tenta sincronizar os arrays
+                // Atualiza os arrays dos jogadores para incluir apenas perguntas que ainda existem
+                perguntasJogador1 = perguntasJogador1.filter(pj => 
+                  perguntas.some(p => p.num === pj.num)
+                );
+                perguntasJogador2 = perguntasJogador2.filter(pj => 
+                  perguntas.some(p => p.num === pj.num)
+                );
+                
+                // Tenta novamente após sincronizar
+                const perguntasJ1Sync = perguntas.filter(p => 
+                  perguntasJogador1.some(pj => pj.num === p.num)
+                );
+                const perguntasJ2Sync = perguntas.filter(p => 
+                  perguntasJogador2.some(pj => pj.num === p.num)
+                );
+                
+                perguntasAtuais = currentPlayer === 1 ? perguntasJ1Sync : perguntasJ2Sync;
+                
+                // Se ainda não há perguntas disponíveis após sincronizar, termina o jogo
+                if (perguntasAtuais.length === 0) {
+                  checkBattleEndGame();
+                  spinning = false;
+                  spinBtn.disabled = false;
+                  return;
+                }
+              } else {
+                // Não há mais perguntas na roleta - termina o jogo
+                checkBattleEndGame();
+                spinning = false;
+                spinBtn.disabled = false;
+                return;
+              }
+            }
+          }
+        } else {
+          perguntasAtuais = [...perguntas];
+        }
+        
+        const indiceEscolhido = Math.floor(Math.random() * perguntasAtuais.length);
+        
+        const setorAngulo = 360 / perguntas.length; // Usa o total de perguntas para calcular os setores
+        // Precisa encontrar o índice real da pergunta no array completo de perguntas
+        const perguntaEscolhida = perguntasAtuais[indiceEscolhido];
+        const indiceReal = perguntas.findIndex(p => p.num === perguntaEscolhida.num);
+        
+        // Ângulo alvo é o meio do setor escolhido
+        const anguloAlvo = indiceReal * setorAngulo + (setorAngulo / 2);
+        const voltas = 5 + Math.random() * 3;
+        // A rotação final é calculada para que o anguloAlvo pare no topo (indicado pela seta)
+        // O '-' é porque a rotação positiva é no sentido horário
+        // Esta é uma rotação ABSOLUTA (calculada a partir de 0)
+        const rotacaoTotal = (voltas * 360) - anguloAlvo;
+
+        // Armazena a nova rotação
+        rotation = rotacaoTotal;
+        
+        // Aplica a transição e a rotação
+        if (wheelWrapper) { // Verificação de segurança
+          wheelWrapper.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+          wheelWrapper.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        // Após a animação terminar
+        setTimeout(() => {
+            // Determina qual setor ficou no topo usando a rotação final
+            // Normaliza a rotação para [0, 360)
+            const rotacaoNormalizada = ((rotation % 360) + 360) % 360;
+
+            // Calcula o ângulo do centro de cada setor e encontra o mais próximo do topo (0º)
+            let indiceFinal = 0;
+            let menorDist = Infinity;
+            for (let i = 0; i < perguntas.length; i++) {
+              const anguloMeio = (setorAngulo * i) + (setorAngulo / 2);
+              // Após rotacionar a roda, o ângulo relativo ao topo será (anguloMeio + rotacao) % 360
+              const angTopo = (anguloMeio + rotacaoNormalizada) % 360;
+              const dist = Math.min(Math.abs(angTopo), Math.abs(360 - angTopo));
+              if (dist < menorDist) {
+                menorDist = dist;
+                indiceFinal = i;
+              }
+            }
+
+            // No modo Battle, verifica se a pergunta selecionada pertence ao jogador atual
+            let perguntaSelecionada = perguntas[indiceFinal];
+            if (battleModeEnabled && currentGame) {
+              const perguntasJogadorAtual = currentPlayer === 1 ? perguntasJogador1 : perguntasJogador2;
+              const perguntaPertenceAoJogador = perguntasJogadorAtual.some(pj => pj.num === perguntaSelecionada.num);
+              
+              // Se a pergunta não pertence ao jogador, busca a próxima pergunta válida
+              if (!perguntaPertenceAoJogador) {
+                const perguntasValidas = perguntas.filter(p => 
+                  perguntasJogadorAtual.some(pj => pj.num === p.num)
+                );
+                if (perguntasValidas.length > 0) {
+                  perguntaSelecionada = perguntasValidas[Math.floor(Math.random() * perguntasValidas.length)];
+                }
+              }
+            }
+
+            spinning = false;
+            spinBtn.disabled = false;
+            spinBtn.textContent = 'Girar';
+
+            // Remove a transição *antes* de qualquer outra coisa
+            // Isto é crucial para o reset em showModal(null) ser instantâneo
+            if (wheelWrapper) { // Verificação de segurança
+              wheelWrapper.style.transition = 'none';
+            }
+
+            // Mostra o modal com a pergunta selecionada
+            showModal(perguntaSelecionada);
+
+        }, 4000);
+      });
+
+      // Reiniciar a Roleta
+      restartBtn.addEventListener('click', () => {
+        textoPerguntas = textoInicial;
+        questionsTextarea.value = textoInicial;
+        rotation = 0;
+        
+        if (wheelWrapper) { // Verificação de segurança
+          wheelWrapper.style.transition = 'none'; // Sem animação
+          wheelWrapper.style.transform = `rotate(0deg)`;
+        }
+        
+        showModal(null);
+        updatePerguntas(); // Re-renderiza a roleta e a UI
+      });
+
+      // --- Funções do Menu Lateral ---
+      function openSidebar() {
+        sidebarOpen = true;
+        sidebar.classList.remove('closed');
+        sidebar.classList.add('open');
+        sidebarOverlay.classList.remove('hidden');
+      }
+
+      function closeSidebar() {
+        sidebarOpen = false;
+        sidebar.classList.remove('open');
+        sidebar.classList.add('closed');
+        sidebarOverlay.classList.add('hidden');
+      }
+
+      // Abrir/Fechar Menu Lateral
+      toggleSidebarBtn.addEventListener('click', () => {
+        if (sidebarOpen) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+
+      closeSidebarBtn.addEventListener('click', () => {
+        closeSidebar();
+      });
+
+      // Fechar menu lateral ao clicar no overlay (fora do menu)
+      sidebarOverlay.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeSidebar();
+      });
+      
+      // Prevenir que cliques dentro do sidebar fechem o menu
+      sidebar.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      // Atualizar perguntas ao digitar no textarea
+      questionsTextarea.addEventListener('input', (e) => {
+        textoPerguntas = e.target.value;
+        updatePerguntas();
+      });
+
+      // Fechar o Modal - Acertou
+      modalCorrectBtn.addEventListener('click', () => {
+        // Jogo da Palavra Secreta - permite tentar uma letra após acertar
+        if (currentGame === 'word') {
+          if (battleModeEnabled) {
+            // Modo Battle - incrementa acerto do jogador atual e permite tentar letra
+            if (currentPlayer === 1) {
+              wordScore1++;
+              if (wordScore1Display) wordScore1Display.textContent = wordScore1;
+            } else {
+              wordScore2++;
+              if (wordScore2Display) wordScore2Display.textContent = wordScore2;
+            }
+            wordCanTryLetter = true;
+            enableWordLetterInput(true);
+          } else {
+            // Modo single player
+            wordScore++;
+            if (wordScoreDisplay) wordScoreDisplay.textContent = wordScore;
+            wordCanTryLetter = true;
+            enableWordLetterInput(false);
+          }
+        }
+        // Atualiza o progresso da corrida antes de fechar
+        updateRaceProgress();
+        showModal(null);
+        
+        // Salva o estado se houver sessão ativa
+        if (gameSessionId) {
+          (async () => { await saveGameState(); })();
+        }
+      });
+
+      // Fechar o Modal - Errou
+      modalWrongBtn.addEventListener('click', () => {
+        // Jogo da Forca - adiciona erro e atualiza o boneco
+        if (currentGame === 'force') {
+          if (battleModeEnabled) {
+            // Modo Battle - conta erro para o jogador atual
+            if (currentPlayer === 1) {
+              forceErrorCount1++;
+            } else {
+              forceErrorCount2++;
+            }
+            // Alterna o jogador para a próxima rodada
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            updateForceBattleGame();
+            checkForceBattleEndGame();
+          } else {
+            // Modo single player
+            forceErrorCount++;
+            updateForceGame();
+            // Verifica se o boneco está completo (perdeu)
+            if (forceErrorCount >= MAX_FORCE_ERRORS) {
+              setTimeout(async () => {
+                await triggerDefeatAnimation();
+                resetForceGame();
+              }, 500);
+            }
+          }
+        }
+        // No modo Battle, conta o erro para o jogador atual e alterna o jogador
+        else if (battleModeEnabled && currentGame === 'race') {
+          // Conta o erro para o jogador atual
+          if (currentPlayer === 1) {
+            raceErrosCount1++;
+          } else {
+            raceErrosCount2++;
+          }
+          // Alterna o jogador para a próxima rodada
+          currentPlayer = currentPlayer === 1 ? 2 : 1;
+          // Atualiza as posições dos carros (mesmo sem acerto, atualiza para mostrar erros)
+          updateBattleCarPositions();
+          // Verifica se algum jogador terminou suas perguntas
+          checkBattleEndGame();
+        }
+        // Não atualiza o progresso (errou)
+        showModal(null);
+        
+        // Salva o estado se houver sessão ativa
+        if (gameSessionId) {
+          (async () => { await saveGameState(); })();
+        }
+      });
+
+      modalContainer.addEventListener('click', (e) => {
+        // Fecha se clicar no fundo escuro (sem contar como acerto)
+        if (e.target === modalContainer) {
+          showModal(null);
+        }
+      });
+
+      // --- Event Handlers de Compartilhamento ---
+      
+      // Botão de Compartilhar Jogo
+      if (shareGameBtn) {
+        shareGameBtn.addEventListener('click', () => {
+          showShareModal();
+        });
+      }
+      
+      // Botão de Copiar Link
+      if (shareCopyBtn) {
+        shareCopyBtn.addEventListener('click', () => {
+          shareLinkInput.select();
+          shareLinkInput.setSelectionRange(0, 99999); // Para mobile
+          try {
+            document.execCommand('copy');
+            shareCopyBtn.textContent = '✓ Copiado!';
+            setTimeout(() => {
+              shareCopyBtn.textContent = 'Copiar';
+            }, 2000);
+          } catch (err) {
+            // Fallback para navegadores modernos
+            navigator.clipboard.writeText(shareLinkInput.value).then(() => {
+              shareCopyBtn.textContent = '✓ Copiado!';
+              setTimeout(() => {
+                shareCopyBtn.textContent = 'Copiar';
+              }, 2000);
+            }).catch(() => {
+              customAlert('Não foi possível copiar o link. Por favor, copie manualmente.', 'Erro');
+            });
+          }
+        });
+      }
+      
+      // Fechar Modal de Compartilhamento
+      if (shareModalClose) {
+        shareModalClose.addEventListener('click', () => {
+          closeShareModal();
+        });
+      }
+      
+      if (shareModalOk) {
+        shareModalOk.addEventListener('click', () => {
+          closeShareModal();
+        });
+      }
+      
+      // Fechar modal ao clicar no overlay
+      if (shareModal) {
+        shareModal.addEventListener('click', (e) => {
+          if (e.target === shareModal) {
+            closeShareModal();
+          }
+        });
+      }
+
+      // --- Funções dos Jogos ---
+      
+      /**
+       * Ativa ou desativa o modo Battle
+       */
+      function toggleBattleMode(enabled) {
+        battleModeEnabled = enabled;
+        
+        if (!currentGame) {
+          // Se não há jogo selecionado, não pode ativar o battle mode
+          if (enabled) {
+            battleModeToggle.checked = false;
+            battleModeEnabled = false;
+            customAlert('Selecione um jogo primeiro para ativar o modo Battle!', 'Atenção');
+            return;
+          }
+        }
+        
+        // Atualiza a exibição baseado no jogo atual e modo battle
+        updateGameDisplay();
+        
+        // Se está ativando o battle mode, reseta o jogo
+        if (enabled && currentGame) {
+          if (currentGame === 'race') {
+            resetBattleGame();
+          } else if (currentGame === 'force') {
+            resetForceBattleGame();
+          } else if (currentGame === 'word') {
+            (async () => { await resetWordBattleGame(); })();
+          }
+        }
+      }
+      
+      /**
+       * Atualiza a exibição do jogo baseado no jogo atual e modo battle
+       */
+      function updateGameDisplay() {
+        // Esconde modos de exibição
+        if (raceSinglePlayer) raceSinglePlayer.classList.add('hidden');
+        if (raceBattleMode) raceBattleMode.classList.add('hidden');
+        if (forceSinglePlayer) forceSinglePlayer.classList.add('hidden');
+        if (forceBattleMode) forceBattleMode.classList.add('hidden');
+        if (wordSinglePlayer) wordSinglePlayer.classList.add('hidden');
+        if (wordBattleMode) wordBattleMode.classList.add('hidden');
+        
+        // Esconde TODOS os containers de jogos primeiro
+        if (raceGameContainer) raceGameContainer.classList.add('hidden');
+        if (forceGameContainer) forceGameContainer.classList.add('hidden');
+        if (wordGameContainer) wordGameContainer.classList.add('hidden');
+        
+        if (currentGame === 'race') {
+          raceGameContainer.classList.remove('hidden');
+          if (battleModeEnabled) {
+            // Modo Battle ativo
+            if (raceBattleMode) raceBattleMode.classList.remove('hidden');
+            // Mostra ambos os carros e suas fumaças
+            if (raceCar1) raceCar1.style.display = 'block';
+            if (raceCar2) raceCar2.style.display = 'block';
+            if (smokeCar1) smokeCar1.style.display = 'block';
+            if (smokeCar2) smokeCar2.style.display = 'block';
+          } else {
+            // Modo single player
+            if (raceSinglePlayer) raceSinglePlayer.classList.remove('hidden');
+            // Esconde o carro 2 e sua fumaça
+            if (raceCar2) raceCar2.style.display = 'none';
+            if (smokeCar2) smokeCar2.style.display = 'none';
+          }
+        } else if (currentGame === 'force') {
+          forceGameContainer.classList.remove('hidden');
+          if (battleModeEnabled) {
+            // Modo Battle ativo
+            if (forceBattleMode) forceBattleMode.classList.remove('hidden');
+            if (forceSinglePlayer) forceSinglePlayer.classList.add('hidden');
+            const forceHangmanSingle = document.getElementById('force-hangman-single');
+            const forceHangmanBattle = document.getElementById('force-hangman-battle');
+            if (forceHangmanSingle) forceHangmanSingle.classList.add('hidden');
+            if (forceHangmanBattle) forceHangmanBattle.classList.remove('hidden');
+          } else {
+            // Modo single player
+            if (forceSinglePlayer) forceSinglePlayer.classList.remove('hidden');
+            if (forceBattleMode) forceBattleMode.classList.add('hidden');
+            const forceHangmanSingle = document.getElementById('force-hangman-single');
+            const forceHangmanBattle = document.getElementById('force-hangman-battle');
+            if (forceHangmanSingle) forceHangmanSingle.classList.remove('hidden');
+            if (forceHangmanBattle) forceHangmanBattle.classList.add('hidden');
+          }
+        } else if (currentGame === 'word') {
+          wordGameContainer.classList.remove('hidden');
+          if (battleModeEnabled) {
+            // Modo Battle ativo
+            if (wordBattleMode) wordBattleMode.classList.remove('hidden');
+            if (wordSinglePlayer) wordSinglePlayer.classList.add('hidden');
+          } else {
+            // Modo single player
+            if (wordSinglePlayer) wordSinglePlayer.classList.remove('hidden');
+            if (wordBattleMode) wordBattleMode.classList.add('hidden');
+          }
+          // As funções resetWordGame e resetWordBattleGame já são chamadas antes
+          // e solicitam as palavras se necessário, então não precisa chamar novamente aqui
+        }
+      }
+      
+      /**
+       * Seleciona um jogo (apenas um jogo pode estar ativo por vez)
+       */
+      function selectGame(gameType) {
+        // PRIMEIRO: Esconde TODOS os containers de jogos antes de ativar qualquer um
+        if (raceGameContainer) raceGameContainer.classList.add('hidden');
+        if (forceGameContainer) forceGameContainer.classList.add('hidden');
+        if (wordGameContainer) wordGameContainer.classList.add('hidden');
+        
+        // Esconde todos os modos de exibição
+        if (raceSinglePlayer) raceSinglePlayer.classList.add('hidden');
+        if (raceBattleMode) raceBattleMode.classList.add('hidden');
+        if (forceSinglePlayer) forceSinglePlayer.classList.add('hidden');
+        if (forceBattleMode) forceBattleMode.classList.add('hidden');
+        if (wordSinglePlayer) wordSinglePlayer.classList.add('hidden');
+        if (wordBattleMode) wordBattleMode.classList.add('hidden');
+        
+        // Remove destaque de TODOS os botões
+        raceGameBtn.classList.remove('bg-purple-800');
+        forceGameBtn.classList.remove('bg-purple-800');
+        wordGameBtn.classList.remove('bg-purple-800');
+        noGameBtn.classList.remove('bg-gray-600');
+        
+        // Atualiza o jogo atual
+        currentGame = gameType;
+        
+        // Se desativou o jogo, desativa também o battle mode
+        if (gameType === null) {
+          battleModeEnabled = false;
+          if (battleModeToggle) battleModeToggle.checked = false;
+          noGameBtn.classList.add('bg-gray-600');
+          closeSidebar();
+          return;
+        }
+        
+        // Atualiza a exibição do jogo selecionado
+        if (gameType === 'race') {
+          raceGameBtn.classList.add('bg-purple-800');
+          // Reseta o jogo baseado no modo battle
+          if (battleModeEnabled) {
+            resetBattleGame();
+          } else {
+            resetRaceGame();
+          }
+          updateGameDisplay();
+          closeSidebar();
+        } else if (gameType === 'force') {
+          forceGameBtn.classList.add('bg-purple-800');
+          // Reseta o jogo baseado no modo battle
+          if (battleModeEnabled) {
+            resetForceBattleGame();
+          } else {
+            resetForceGame();
+          }
+          updateGameDisplay();
+          closeSidebar();
+        } else if (gameType === 'word') {
+          wordGameBtn.classList.add('bg-purple-800');
+          // Reseta o jogo baseado no modo battle
+          if (battleModeEnabled) {
+            (async () => { await resetWordBattleGame(); })();
+          } else {
+            (async () => { await resetWordGame(); })();
+          }
+          updateGameDisplay();
+          closeSidebar();
+        }
+      }
+
+      /**
+       * Reseta o jogo da Forca
+       */
+      function resetForceGame() {
+        if (battleModeEnabled) {
+          resetForceBattleGame();
+        } else {
+          forceErrorCount = 0;
+          updateForceGame();
+        }
+      }
+      
+      /**
+       * Reseta o jogo da Forca no modo Battle
+       */
+      function resetForceBattleGame() {
+        forceErrorCount1 = 0;
+        forceErrorCount2 = 0;
+        currentPlayer = 1;
+        updateForceBattleGame();
+      }
+      
+      /**
+       * Atualiza o jogo da Forca - mostra as partes do boneco conforme os erros
+       */
+      function updateForceGame() {
+        // Atualiza contadores
+        if (forceErrors) forceErrors.textContent = forceErrorCount;
+        if (forceErrorCountDisplay) forceErrorCountDisplay.textContent = `${forceErrorCount}/${MAX_FORCE_ERRORS}`;
+        
+        // Array com as partes do boneco na ordem de aparição
+        const parts = ['head', 'body', 'arm-left', 'arm-right', 'leg-left', 'leg-right'];
+        
+        // Mostra as partes conforme o número de erros
+        parts.forEach((partId, index) => {
+          const part = document.getElementById(partId);
+          if (part) {
+            if (index < forceErrorCount) {
+              part.classList.remove('hidden');
+            } else {
+              part.classList.add('hidden');
+            }
+          }
+        });
+      }
+      
+      /**
+       * Atualiza o jogo da Forca no modo Battle - mostra as partes dos bonecos conforme os erros
+       */
+      function updateForceBattleGame() {
+        // Atualiza contadores
+        if (forceErrorCount1Display) forceErrorCount1Display.textContent = `${forceErrorCount1}/${MAX_FORCE_ERRORS}`;
+        if (forceErrorCount2Display) forceErrorCount2Display.textContent = `${forceErrorCount2}/${MAX_FORCE_ERRORS}`;
+        if (forceError1) forceError1.textContent = `${forceErrorCount1} erros`;
+        if (forceError2) forceError2.textContent = `${forceErrorCount2} erros`;
+        
+        // Atualiza o jogador atual
+        const currentPlayerForceDisplay = document.getElementById('current-player-force');
+        if (currentPlayerForceDisplay) {
+          if (currentPlayer === 1) {
+            currentPlayerForceDisplay.textContent = 'Jogador 1';
+            currentPlayerForceDisplay.className = 'font-bold text-red-600';
+          } else {
+            currentPlayerForceDisplay.textContent = 'Jogador 2';
+            currentPlayerForceDisplay.className = 'font-bold text-blue-600';
+          }
+        }
+        
+        // Array com as partes do boneco na ordem de aparição
+        const parts = ['head', 'body', 'arm-left', 'arm-right', 'leg-left', 'leg-right'];
+        
+        // Atualiza o boneco do Jogador 1
+        parts.forEach((partName, index) => {
+          const partId = partName + '1';
+          const part = document.getElementById(partId);
+          if (part) {
+            if (index < forceErrorCount1) {
+              part.classList.remove('hidden');
+            } else {
+              part.classList.add('hidden');
+            }
+          }
+        });
+        
+        // Atualiza o boneco do Jogador 2
+        parts.forEach((partName, index) => {
+          const partId = partName + '2';
+          const part = document.getElementById(partId);
+          if (part) {
+            if (index < forceErrorCount2) {
+              part.classList.remove('hidden');
+            } else {
+              part.classList.add('hidden');
+            }
+          }
+        });
+      }
+      
+      /**
+       * Verifica se o jogo da Forca no modo Battle terminou
+       */
+      function checkForceBattleEndGame() {
+        if (!battleModeEnabled || currentGame !== 'force') return;
+        
+        // Verifica se algum jogador foi enforcado (6 erros)
+        if (forceErrorCount1 >= MAX_FORCE_ERRORS) {
+          setTimeout(async () => {
+            await triggerVictoryAnimation();
+            resetForceBattleGame();
+          }, 500);
+          return;
+        }
+        
+        if (forceErrorCount2 >= MAX_FORCE_ERRORS) {
+          setTimeout(async () => {
+            await triggerVictoryAnimation();
+            resetForceBattleGame();
+          }, 500);
+          return;
+        }
+      }
+      
+      /**
+       * Solicita ao usuário as palavras que serão usadas no jogo
+       */
+      async function requestWordList() {
+        const palavrasInput = await customPrompt(
+          'Digite as palavras que serão usadas no jogo (separadas por vírgula ou uma por linha):\n\nExemplo: COMPUTADOR, EDUCACAO, APRENDIZADO',
+          'Palavras do Jogo',
+          '',
+          true // isPassword = true para ocultar as palavras digitadas
+        );
+        
+        if (!palavrasInput || palavrasInput.trim() === '') {
+          await customAlert('Nenhuma palavra foi fornecida. O jogo não pode começar sem palavras.', 'Atenção');
+          return false;
+        }
+        
+        // Processa as palavras (aceita vírgula ou quebra de linha como separador)
+        // Primeiro tenta dividir por quebra de linha, depois por vírgula
+        let palavras = [];
+        
+        // Se há quebras de linha, usa elas como separador principal
+        if (palavrasInput.includes('\n')) {
+          palavras = palavrasInput
+            .split('\n')
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+        } else {
+          // Se não há quebras de linha, divide por vírgula
+          palavras = palavrasInput
+            .split(',')
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+        }
+        
+        // Converte todas para maiúsculas e remove espaços extras
+        palavras = palavras
+          .map(p => p.trim().toUpperCase())
+          .filter(p => p.length > 0);
+        
+        if (palavras.length === 0) {
+          await customAlert('Nenhuma palavra válida foi encontrada. O jogo não pode começar.', 'Atenção');
+          return false;
+        }
+        
+        wordList = palavras;
+        wordListIndex = 0;
+        return true;
+      }
+      
+      /**
+       * Seleciona a próxima palavra da lista
+       * Só mostra o modal "Palavras Esgotadas" se a palavra atual já foi finalizada
+       */
+      async function getNextWord() {
+        if (wordList.length === 0 || wordListIndex >= wordList.length) {
+          // Verifica se a palavra atual foi finalizada antes de mostrar o modal
+          const discoveredCount = wordDiscovered.filter(d => d).length;
+          const wordCompleted = discoveredCount === wordSecret.length;
+          
+          // Só mostra o modal se a palavra atual já foi finalizada
+          // Se não foi finalizada, retorna null sem mostrar o modal
+          if (!wordCompleted && wordSecret && wordSecret.length > 0) {
+            return null; // Palavra ainda não finalizada, não mostra modal
+          }
+          
+          // Todas as palavras foram usadas E a palavra atual foi finalizada
+          // Solicita novas palavras (após animação ter terminado)
+          const continuar = await customConfirm('Todas as palavras foram usadas! Deseja adicionar novas palavras?', 'Palavras Esgotadas');
+          if (continuar) {
+            if (await requestWordList()) {
+              wordListIndex = 0;
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        }
+        
+        const palavra = wordList[wordListIndex];
+        wordListIndex++;
+        return palavra;
+      }
+      
+      /**
+       * Reseta o jogo da Palavra Secreta
+       */
+      async function resetWordGame() {
+        // Se não há lista de palavras, solicita ao usuário
+        if (wordList.length === 0) {
+          if (!(await requestWordList())) {
+            return;
+          }
+        }
+        
+        // Seleciona a próxima palavra da lista
+        const nextWord = await getNextWord();
+        if (!nextWord) {
+          return;
+        }
+        
+        wordSecret = nextWord;
+        wordDiscovered = new Array(wordSecret.length).fill(false);
+        wordTriedLetters = [];
+        wordScore = 0;
+        wordCanTryLetter = false;
+        updateWordGame();
+        enableWordLetterInput(false);
+      }
+      
+      /**
+       * Reseta o jogo da Palavra Secreta no modo Battle
+       */
+      async function resetWordBattleGame() {
+        // Se não há lista de palavras, solicita ao usuário
+        if (wordList.length === 0) {
+          if (!(await requestWordList())) {
+            return;
+          }
+        }
+        
+        // Seleciona a próxima palavra da lista
+        const nextWord = await getNextWord();
+        if (!nextWord) {
+          return;
+        }
+        
+        wordSecret = nextWord;
+        wordDiscovered = new Array(wordSecret.length).fill(false);
+        wordTriedLetters = [];
+        wordScore1 = 0;
+        wordScore2 = 0;
+        currentPlayer = 1;
+        wordCanTryLetter = false;
+        updateWordBattleGame();
+        enableWordLetterInput(true);
+      }
+      
+      /**
+       * Atualiza o display do jogo da Palavra Secreta (modo single player)
+       */
+      function updateWordGame() {
+        if (!wordDisplay || !wordSecret || wordSecret.length === 0) return;
+        
+        wordDisplay.innerHTML = '';
+        wordSecret.split('').forEach((letter, index) => {
+          const span = document.createElement('span');
+          span.className = 'text-3xl sm:text-4xl font-bold text-purple-600 border-b-4 border-purple-600 w-10 h-12 flex items-center justify-center';
+          if (wordDiscovered[index]) {
+            span.textContent = letter;
+          } else {
+            span.textContent = '_';
+            span.className += ' text-gray-400';
+          }
+          wordDisplay.appendChild(span);
+        });
+        
+        // Atualiza letras tentadas
+        if (wordTriedLettersDisplay) {
+          wordTriedLettersDisplay.textContent = wordTriedLetters.length > 0 ? wordTriedLetters.join(', ') : 'Nenhuma';
+        }
+        
+        // Calcula progresso
+        const discoveredCount = wordDiscovered.filter(d => d).length;
+        const progress = (discoveredCount / wordSecret.length) * 100;
+        if (wordProgress) wordProgress.textContent = `${Math.round(progress)}%`;
+        
+        // Verifica se ganhou
+        if (discoveredCount === wordSecret.length) {
+          setTimeout(async () => {
+            await triggerVictoryAnimation();
+            // Reseta para a próxima palavra da lista (após animação)
+            await resetWordGame();
+          }, 500);
+        }
+      }
+      
+      /**
+       * Atualiza o display do jogo da Palavra Secreta (modo Battle)
+       */
+      function updateWordBattleGame() {
+        if (!wordDisplayBattle || !wordSecret || wordSecret.length === 0) return;
+        
+        wordDisplayBattle.innerHTML = '';
+        wordSecret.split('').forEach((letter, index) => {
+          const span = document.createElement('span');
+          span.className = 'text-2xl sm:text-3xl font-bold text-purple-600 border-b-4 border-purple-600 w-8 h-10 flex items-center justify-center';
+          if (wordDiscovered[index]) {
+            span.textContent = letter;
+          } else {
+            span.textContent = '_';
+            span.className += ' text-gray-400';
+          }
+          wordDisplayBattle.appendChild(span);
+        });
+        
+        // Atualiza letras tentadas
+        if (wordTriedLettersBattleDisplay) {
+          wordTriedLettersBattleDisplay.textContent = wordTriedLetters.length > 0 ? wordTriedLetters.join(', ') : 'Nenhuma';
+        }
+        
+        // Atualiza jogador atual
+        const currentPlayerWordDisplay = document.getElementById('current-player-word');
+        if (currentPlayerWordDisplay) {
+          if (currentPlayer === 1) {
+            currentPlayerWordDisplay.textContent = 'Jogador 1';
+            currentPlayerWordDisplay.className = 'font-bold text-red-600';
+          } else {
+            currentPlayerWordDisplay.textContent = 'Jogador 2';
+            currentPlayerWordDisplay.className = 'font-bold text-blue-600';
+          }
+        }
+        
+        // Atualiza scores
+        if (wordScore1Display) wordScore1Display.textContent = wordScore1;
+        if (wordScore2Display) wordScore2Display.textContent = wordScore2;
+        
+        // Calcula progresso
+        const discoveredCount = wordDiscovered.filter(d => d).length;
+        const progress = (discoveredCount / wordSecret.length) * 100;
+        const wordProgressBattleDisplay = document.getElementById('word-progress-battle');
+        if (wordProgressBattleDisplay) wordProgressBattleDisplay.textContent = `${Math.round(progress)}%`;
+        
+        // Verifica se algum jogador ganhou
+        if (discoveredCount === wordSecret.length) {
+          setTimeout(async () => {
+            await triggerVictoryAnimation();
+            // Reseta para a próxima palavra da lista (após animação)
+            await resetWordBattleGame();
+          }, 500);
+        }
+      }
+      
+      /**
+       * Habilita/desabilita o input de letra
+       */
+      function enableWordLetterInput(isBattle) {
+        const input = isBattle ? wordLetterInputBattle : wordLetterInput;
+        const btn = isBattle ? wordTryLetterBtnBattle : wordTryLetterBtn;
+        
+        if (input && btn) {
+          if (wordCanTryLetter) {
+            input.disabled = false;
+            btn.disabled = false;
+            input.focus();
+            if (wordMessage) wordMessage.textContent = 'Digite uma letra e clique em Tentar!';
+            if (wordMessageBattle) wordMessageBattle.textContent = 'Digite uma letra e clique em Tentar!';
+          } else {
+            input.disabled = true;
+            btn.disabled = true;
+            input.value = '';
+            if (wordMessage) wordMessage.textContent = 'Acerte uma pergunta para tentar uma letra!';
+            if (wordMessageBattle) wordMessageBattle.textContent = 'Acertem perguntas para tentar letras!';
+          }
+        }
+      }
+      
+      /**
+       * Inicializa o display da palavra (mostra os espaços/underscores)
+       * Esta função é chamada quando o jogo é selecionado para mostrar os espaços imediatamente
+       */
+      async function initializeWordDisplay() {
+        // Sempre reseta o jogo quando selecionado (solicita palavras se necessário)
+        // As funções resetWordGame e resetWordBattleGame já fazem isso
+        if (battleModeEnabled) {
+          await resetWordBattleGame();
+        } else {
+          await resetWordGame();
+        }
+      }
+      
+      /**
+       * Verifica se o jogador acertou a palavra completa
+       */
+      async function tryCompleteWord(guessedWord, isBattle) {
+        if (!wordSecret || wordSecret.length === 0) return false;
+        
+        const guessedUpper = guessedWord.trim().toUpperCase();
+        const secretUpper = wordSecret.toUpperCase();
+        
+        if (guessedUpper === secretUpper) {
+          // Acertou a palavra!
+          if (isBattle) {
+            await triggerVictoryAnimation();
+            await resetWordBattleGame();
+          } else {
+            await triggerVictoryAnimation();
+            await resetWordGame();
+          }
+          return true;
+        } else {
+          // Errou a palavra!
+          if (isBattle) {
+            await triggerVictoryAnimation();
+            await resetWordBattleGame();
+          } else {
+            await triggerDefeatAnimation();
+            await resetWordGame();
+          }
+          return false;
+        }
+      }
+      
+      /**
+       * Tenta uma letra no jogo da Palavra Secreta
+       */
+      async function tryLetter(letter, isBattle) {
+        if (!letter || letter.length !== 1 || !wordSecret || wordSecret.length === 0) return;
+        
+        letter = letter.toUpperCase();
+        
+        // Verifica se a letra já foi tentada
+        if (wordTriedLetters.includes(letter)) {
+          if (isBattle) {
+            if (wordMessageBattle) wordMessageBattle.textContent = 'Esta letra já foi tentada!';
+          } else {
+            if (wordMessage) wordMessage.textContent = 'Esta letra já foi tentada!';
+          }
+          return false;
+        }
+        
+        // Adiciona à lista de tentadas
+        wordTriedLetters.push(letter);
+        
+        // Verifica se a letra existe na palavra
+        let found = false;
+        wordSecret.split('').forEach((secretLetter, index) => {
+          if (secretLetter === letter) {
+            wordDiscovered[index] = true;
+            found = true;
+          }
+        });
+        
+        if (found) {
+          // Verifica se o jogo terminou ANTES de atualizar o display (todas as letras descobertas)
+          // Primeiro marca a letra como descoberta
+          let discoveredCount = wordDiscovered.filter(d => d).length;
+          const gameWon = discoveredCount === wordSecret.length;
+          
+          // Se o jogo terminou, atualiza o display e retorna - a animação será disparada pela função updateWordGame/updateWordBattleGame
+          if (gameWon) {
+            // Atualiza display
+            if (isBattle) {
+              updateWordBattleGame();
+              if (wordMessageBattle) wordMessageBattle.textContent = `✓ Letra "${letter}" encontrada!`;
+            } else {
+              updateWordGame();
+              if (wordMessage) wordMessage.textContent = `✓ Letra "${letter}" encontrada!`;
+            }
+            wordCanTryLetter = false;
+            return true; // Retorna indicando que o jogo terminou
+          }
+          
+          // Se o jogo não terminou, atualiza display normalmente
+          if (isBattle) {
+            updateWordBattleGame();
+            if (wordMessageBattle) wordMessageBattle.textContent = `✓ Letra "${letter}" encontrada!`;
+          } else {
+            updateWordGame();
+            if (wordMessage) wordMessage.textContent = `✓ Letra "${letter}" encontrada!`;
+          }
+          
+          // Verifica novamente se o jogo terminou após atualizar (caso a última letra tenha sido descoberta)
+          discoveredCount = wordDiscovered.filter(d => d).length;
+          const gameWonAfterUpdate = discoveredCount === wordSecret.length;
+          
+          // Se o jogo terminou após atualizar, não mostra o modal
+          if (gameWonAfterUpdate) {
+            wordCanTryLetter = false;
+            return true; // Retorna indicando que o jogo terminou
+          }
+          
+          // Pergunta se quer tentar adivinhar a palavra completa (apenas se o jogo não terminou)
+          const wantToGuess = await customConfirm(
+            `Você acertou a letra "${letter}"! Deseja tentar adivinhar a palavra completa?\n\nSe acertar: Você vence!\nSe errar: ${isBattle ? 'O oponente vence!' : 'Você perde!'}`,
+            'Tentar a Palavra?'
+          );
+          
+          if (wantToGuess) {
+            const guessedWord = await customPrompt(
+              'Digite a palavra completa que você acha que é:',
+              'Adivinhar Palavra',
+              '',
+              false
+            );
+            
+            if (guessedWord && guessedWord.trim() !== '') {
+              const gameEnded = await tryCompleteWord(guessedWord, isBattle);
+              if (gameEnded !== undefined) {
+                return; // Sai da função pois o jogo foi finalizado
+              }
+            }
+          }
+          
+          wordCanTryLetter = false;
+          enableWordLetterInput(isBattle);
+        } else {
+          // Letra não encontrada - perde a vez (só no modo Battle)
+          if (isBattle) {
+            if (wordMessageBattle) wordMessageBattle.textContent = `✗ Letra "${letter}" não existe! Passa a vez.`;
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            wordCanTryLetter = false;
+            enableWordLetterInput(true);
+            updateWordBattleGame();
+          } else {
+            if (wordMessage) wordMessage.textContent = `✗ Letra "${letter}" não existe!`;
+            wordCanTryLetter = false;
+            enableWordLetterInput(false);
+          }
+        }
+        
+        return found;
+      }
+      
+      /**
+       * Reseta o jogo de corrida (modo single player)
+       */
+      function resetRaceGame() {
+        raceScoreCount = 0;
+        raceProgressPercent = 0;
+        // Armazena o total inicial de perguntas quando o jogo começa
+        totalPerguntasIniciais = perguntas.length;
+        if (raceCar1) {
+          raceCar1.style.transform = 'translateX(-50%) translateY(0px)';
+        }
+        if (smokeCar1) {
+          smokeCar1.style.transform = 'translateX(-50%) translateY(0px)';
+        }
+        if (raceProgress) {
+          raceProgress.textContent = '0%';
+        }
+        if (raceScore) {
+          raceScore.textContent = '0';
+        }
+      }
+
+      /**
+       * Reseta o jogo Battle (modo dois jogadores)
+       * Divide as perguntas em 50% para cada jogador
+       */
+      function resetBattleGame() {
+        raceScoreCount1 = 0;
+        raceScoreCount2 = 0;
+        raceErrosCount1 = 0;
+        raceErrosCount2 = 0;
+        raceProgressPercent1 = 0;
+        raceProgressPercent2 = 0;
+        currentPlayer = 1;
+        perguntasErradas = 0;
+        totalPerguntasIniciais = perguntas.length;
+        
+        // Divide as perguntas em 50% para cada jogador
+        const totalPerguntas = perguntas.length;
+        const metade = Math.floor(totalPerguntas / 2);
+        perguntasJogador1 = perguntas.slice(0, metade).map(p => ({ ...p }));
+        perguntasJogador2 = perguntas.slice(metade).map(p => ({ ...p }));
+        
+        // Se houver número ímpar, a pergunta extra vai para o jogador 1
+        if (totalPerguntas % 2 !== 0 && perguntas.length > metade) {
+          perguntasJogador1.push({ ...perguntas[metade] });
+        }
+        
+        // Reset dos carros
+        if (raceCar1) {
+          raceCar1.style.transform = 'translateX(-50%) translateY(0px)';
+        }
+        if (raceCar2) {
+          raceCar2.style.transform = 'translateX(-50%) translateY(0px)';
+        }
+        // Reset da fumaça
+        if (smokeCar1) {
+          smokeCar1.style.transform = 'translateX(-50%) translateY(0px)';
+        }
+        if (smokeCar2) {
+          smokeCar2.style.transform = 'translateX(-50%) translateY(0px)';
+        }
+        
+        // Reset dos displays
+        if (raceScore1) raceScore1.textContent = '0';
+        if (raceScore2) raceScore2.textContent = '0';
+        if (raceProgress1) raceProgress1.textContent = '0%';
+        if (raceProgress2) raceProgress2.textContent = '0%';
+        if (currentPlayerDisplay) {
+          currentPlayerDisplay.textContent = 'Jogador 1';
+          currentPlayerDisplay.className = 'font-bold text-red-600';
+        }
+      }
+
+      /**
+       * Atualiza a posição do carro baseado no progresso atual (modo single player)
+       * O progresso é calculado em tempo real baseado no total atual de perguntas
+       */
+      function updateRaceCarPosition() {
+        if (currentGame !== 'race' || !raceCar1 || battleModeEnabled) return; // Não atualiza se battle mode está ativo
+        
+        // Calcula o progresso baseado no total atual de perguntas (em tempo real)
+        // O total atual é: perguntas restantes + perguntas já respondidas
+        const totalAtual = perguntas.length + raceScoreCount;
+        
+        // Armazena o total inicial apenas na primeira vez (para referência)
+        if (totalPerguntasIniciais === 0 && totalAtual > 0) {
+          totalPerguntasIniciais = totalAtual;
+        }
+        
+        // Calcula o progresso baseado no total atual de perguntas (em tempo real)
+        // Assim, se perguntas forem adicionadas ou removidas, o carro ajusta automaticamente
+        if (totalAtual > 0) {
+          raceProgressPercent = Math.min(100, (raceScoreCount / totalAtual) * 100);
+        } else {
+          raceProgressPercent = 0;
+        }
+        
+        // Atualiza o display
+        if (raceProgress) {
+          raceProgress.textContent = `${Math.round(raceProgressPercent)}%`;
+        }
+        if (raceScore) {
+          raceScore.textContent = raceScoreCount;
+        }
+        
+        // Move o carro na pista (verticalmente - de cima para baixo)
+        // A pista tem altura dinâmica baseada no tamanho da tela
+        // Calcula a altura disponível dinamicamente
+        const pistaElement = raceCar1?.parentElement?.querySelector('.relative.bg-gradient-to-b');
+        const alturaPista = pistaElement ? pistaElement.offsetHeight : 500;
+        const maxPosition = alturaPista - 32 - 85 - 40; // altura total - top inicial - altura do carro - linha de chegada
+        const positionY = (raceProgressPercent / 100) * maxPosition;
+        // Usa !important para garantir que sobrescreva a animação CSS
+        raceCar1.style.setProperty('transform', `translateX(-50%) translateY(${positionY}px)`, 'important');
+        // Move a fumaça junto com o carro
+        if (smokeCar1) {
+          smokeCar1.style.transform = `translateX(-50%) translateY(${positionY}px)`;
+        }
+      }
+
+      /**
+       * Atualiza as posições dos carros no modo Battle
+       * Cada jogador tem 50% das perguntas iniciais
+       */
+      function updateBattleCarPositions() {
+        if (!battleModeEnabled || !currentGame) return;
+        
+        // Calcula o total de perguntas de cada jogador (50% das iniciais)
+        const totalPerguntasJogador1 = Math.ceil(totalPerguntasIniciais / 2);
+        const totalPerguntasJogador2 = Math.floor(totalPerguntasIniciais / 2);
+        
+        // Calcula o progresso de cada jogador baseado nas suas próprias perguntas
+        // Progresso = acertos / total de perguntas do jogador
+        if (totalPerguntasJogador1 > 0) {
+          raceProgressPercent1 = Math.min(100, (raceScoreCount1 / totalPerguntasJogador1) * 100);
+        } else {
+          raceProgressPercent1 = 0;
+        }
+        
+        if (totalPerguntasJogador2 > 0) {
+          raceProgressPercent2 = Math.min(100, (raceScoreCount2 / totalPerguntasJogador2) * 100);
+        } else {
+          raceProgressPercent2 = 0;
+        }
+        
+        // Atualiza os displays
+        if (raceScore1) raceScore1.textContent = raceScoreCount1;
+        if (raceScore2) raceScore2.textContent = raceScoreCount2;
+        if (raceProgress1) raceProgress1.textContent = `${Math.round(raceProgressPercent1)}%`;
+        if (raceProgress2) raceProgress2.textContent = `${Math.round(raceProgressPercent2)}%`;
+        
+        // Atualiza o jogador atual
+        if (currentPlayerDisplay) {
+          if (currentPlayer === 1) {
+            currentPlayerDisplay.textContent = 'Jogador 1';
+            currentPlayerDisplay.className = 'font-bold text-red-600';
+          } else {
+            currentPlayerDisplay.textContent = 'Jogador 2';
+            currentPlayerDisplay.className = 'font-bold text-blue-600';
+          }
+        }
+        
+        // Move os carros na pista
+        // Calcula a altura disponível dinamicamente
+        const pistaElement = raceCar1?.parentElement?.querySelector('.relative.bg-gradient-to-b');
+        const alturaPista = pistaElement ? pistaElement.offsetHeight : 500;
+        const maxPosition = alturaPista - 32 - 85 - 40; // altura total - top inicial - altura do carro - linha de chegada
+        if (raceCar1) {
+          const positionY1 = (raceProgressPercent1 / 100) * maxPosition;
+          raceCar1.style.setProperty('transform', `translateX(-50%) translateY(${positionY1}px)`, 'important');
+          // Move a fumaça junto com o carro 1
+          if (smokeCar1) {
+            smokeCar1.style.transform = `translateX(-50%) translateY(${positionY1}px)`;
+          }
+        }
+        if (raceCar2) {
+          const positionY2 = (raceProgressPercent2 / 100) * maxPosition;
+          raceCar2.style.setProperty('transform', `translateX(-50%) translateY(${positionY2}px)`, 'important');
+          // Move a fumaça junto com o carro 2
+          if (smokeCar2) {
+            smokeCar2.style.transform = `translateX(-50%) translateY(${positionY2}px)`;
+          }
+        }
+      }
+
+      /**
+       * Verifica se o jogo Battle terminou e determina o vencedor
+       * Regras:
+       * - Se um jogador acertou todas as suas perguntas, ele vence imediatamente
+       * - Se ambos acabaram suas perguntas mas erraram, vence quem errou menos
+       */
+      function checkBattleEndGame() {
+        if (!battleModeEnabled || !currentGame) return;
+        
+        const totalPerguntasJogador1 = Math.ceil(totalPerguntasIniciais / 2);
+        const totalPerguntasJogador2 = Math.floor(totalPerguntasIniciais / 2);
+        
+        // Verifica se algum jogador terminou todas as suas perguntas
+        const perguntasRestantesJogador1 = perguntasJogador1.length;
+        const perguntasRestantesJogador2 = perguntasJogador2.length;
+        
+        // Verifica se alguém acertou todas (vitória imediata)
+        const jogador1AcertouTodas = raceScoreCount1 === totalPerguntasJogador1 && totalPerguntasJogador1 > 0;
+        const jogador2AcertouTodas = raceScoreCount2 === totalPerguntasJogador2 && totalPerguntasJogador2 > 0;
+        
+        if (jogador1AcertouTodas) {
+          setTimeout(async () => {
+            await triggerVictoryAnimation();
+            resetBattleGame();
+          }, 500);
+          return;
+        }
+        
+        if (jogador2AcertouTodas) {
+          setTimeout(async () => {
+            await triggerVictoryAnimation();
+            resetBattleGame();
+          }, 500);
+          return;
+        }
+        
+        // Se ambos acabaram suas perguntas (mas não acertaram todas)
+        if (perguntasRestantesJogador1 === 0 && perguntasRestantesJogador2 === 0) {
+          // Nenhum acertou todas - vence quem errou menos
+          const errosJogador1 = raceErrosCount1;
+          const errosJogador2 = raceErrosCount2;
+          
+          let mensagem = '';
+          if (errosJogador1 < errosJogador2) {
+            mensagem = `🏆 Jogador 1 venceu! Acertou ${raceScoreCount1} de ${totalPerguntasJogador1} (errou ${errosJogador1}). Jogador 2 errou ${errosJogador2}.`;
+          } else if (errosJogador2 < errosJogador1) {
+            mensagem = `🏆 Jogador 2 venceu! Acertou ${raceScoreCount2} de ${totalPerguntasJogador2} (errou ${errosJogador2}). Jogador 1 errou ${errosJogador1}.`;
+          } else {
+            mensagem = `🏁 Empate! Jogador 1: ${raceScoreCount1} acertos, ${errosJogador1} erros. Jogador 2: ${raceScoreCount2} acertos, ${errosJogador2} erros.`;
+          }
+          
+          setTimeout(async () => {
+            // Só anima se houver vencedor (não em empate)
+            if (errosJogador1 !== errosJogador2) {
+              await triggerVictoryAnimation();
+            }
+            resetBattleGame();
+          }, 500);
+        }
+        // Se apenas um jogador acabou mas não acertou todas, o jogo continua
+      }
+
+      /**
+       * Atualiza o progresso da corrida quando o usuário acerta uma pergunta
+       * O progresso é calculado baseado no total de perguntas em tempo real
+       */
+      function updateRaceProgress() {
+        // Verifica primeiro se battle mode está ativo (tem prioridade)
+        if (battleModeEnabled && currentGame) {
+          // Modo Battle - dois jogadores
+          if (currentPlayer === 1) {
+            raceScoreCount1++;
+          } else {
+            raceScoreCount2++;
+          }
+          
+          // Alterna o jogador para a próxima rodada
+          currentPlayer = currentPlayer === 1 ? 2 : 1;
+          
+          // Atualiza as posições dos carros
+          updateBattleCarPositions();
+          
+          // Verifica se algum jogador terminou suas perguntas
+          checkBattleEndGame();
+        } else if (currentGame === 'race') {
+          // Modo single player (sem battle mode)
+          raceScoreCount++;
+          
+          // Se não temos o total inicial guardado, calcula agora (primeiro acerto)
+          if (totalPerguntasIniciais === 0) {
+            totalPerguntasIniciais = perguntas.length + raceScoreCount;
+          }
+          
+          // Atualiza a posição do carro
+          updateRaceCarPosition();
+          
+          // Verifica se chegou ao fim (quando todas as perguntas foram respondidas)
+          if (perguntas.length === 0) {
+            if (raceProgressPercent >= 100) {
+              setTimeout(async () => {
+                await triggerVictoryAnimation();
+                resetRaceGame();
+              }, 500);
+            } else {
+              setTimeout(async () => {
+                await triggerDefeatAnimation();
+              }, 500);
+            }
+          }
+        }
+      }
+
+      // Event Listeners dos Jogos
+      raceGameBtn.addEventListener('click', () => {
+        selectGame('race');
+      });
+
+      forceGameBtn.addEventListener('click', () => {
+        selectGame('force');
+      });
+      
+      if (wordGameBtn) {
+        wordGameBtn.addEventListener('click', () => {
+          selectGame('word');
+        });
+      } else {
+        console.error('wordGameBtn não encontrado!');
+      }
+
+      noGameBtn.addEventListener('click', () => {
+        selectGame(null);
+      });
+      
+      // Event listeners do jogo da Palavra Secreta
+      if (wordTryLetterBtn) {
+        wordTryLetterBtn.addEventListener('click', () => {
+          const letter = wordLetterInput?.value?.trim();
+          if (letter) {
+            tryLetter(letter, false);
+            if (wordLetterInput) wordLetterInput.value = '';
+          }
+        });
+      }
+      
+      if (wordTryLetterBtnBattle) {
+        wordTryLetterBtnBattle.addEventListener('click', () => {
+          const letter = wordLetterInputBattle?.value?.trim();
+          if (letter) {
+            tryLetter(letter, true);
+            if (wordLetterInputBattle) wordLetterInputBattle.value = '';
+          }
+        });
+      }
+      
+      // Permitir Enter para tentar letra
+      if (wordLetterInput) {
+        wordLetterInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !wordLetterInput.disabled) {
+            wordTryLetterBtn?.click();
+          }
+        });
+      }
+      
+      if (wordLetterInputBattle) {
+        wordLetterInputBattle.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !wordLetterInputBattle.disabled) {
+            wordTryLetterBtnBattle?.click();
+          }
+        });
+      }
+      
+      // Event Listener do Toggle Battle Mode
+      if (battleModeToggle) {
+        battleModeToggle.addEventListener('change', (e) => {
+          toggleBattleMode(e.target.checked);
+        });
+      }
+
+      // --- Inicialização ---
+      // Verifica se há um jogo compartilhado na URL
+      checkUrlForGame();
+      
+      questionsTextarea.value = textoInicial;
+      updatePerguntas(); // Renderiza a roleta e a UI no carregamento
+      
+      // Salva o estado inicial se já houver uma sessão ativa
+      if (gameSessionId) {
+        (async () => { await saveGameState(); })();
+      }
+    });
+  </script>
+
+</body>
+</html>
