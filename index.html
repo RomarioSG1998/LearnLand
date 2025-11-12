@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wheel ABC - Roleta de Perguntas</title>
+  <title>Learnland</title>
   <!-- Carrega o Tailwind CSS -->
   <script src="https://cdn-tailwindcss.vercel.app/"></script>
   <style>
@@ -489,6 +489,24 @@
       display: inline-block;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
       font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+    }
+
+    .draggable-panel {
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .draggable-panel.dragging {
+      cursor: grabbing;
+    }
+
+    #wheel-draggable {
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #wheel-draggable.dragging {
+      cursor: grabbing;
     }
 
     .game-title::before {
@@ -1007,9 +1025,13 @@
     </svg>
   </button>
 
-  <h1 class="game-title mb-3 sm:mb-4 text-center">
-    Wheel ABC
-  </h1>
+  <div class="fixed inset-0 flex items-center justify-center pointer-events-none -z-10">
+    <img
+      src="assets/imagens/logo_learnland.png"
+      alt="Learnland"
+      class="w-full max-w-6xl opacity-20 object-contain"
+    />
+  </div>
 
   <!-- Menu Lateral -->
   <div id="sidebar" class="sidebar closed fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-40 overflow-y-auto">
@@ -1106,10 +1128,10 @@
 
   <!-- Container da Roleta (mostrado quando há perguntas) -->
   <!-- Modificado para ser um flex container (coluna em telemóvel, linha em ecrãs médios) -->
-  <div id="roulette-container" class="relative flex flex-col lg:flex-row items-center justify-center lg:items-center w-full max-w-7xl gap-2 sm:gap-3 lg:gap-4 px-2 sm:px-3 lg:px-4 mx-auto flex-1 overflow-hidden">
+  <div id="roulette-container" class="relative flex flex-col lg:flex-row items-center lg:items-center lg:justify-between w-full max-w-7xl gap-2 sm:gap-3 lg:gap-4 px-2 sm:px-3 lg:px-4 mx-auto flex-1 overflow-visible">
     
     <!-- Jogo de Corrida (aparece à esquerda quando selecionado) -->
-    <div id="race-game-container" class="hidden w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
+    <div id="race-game-container" class="hidden draggable-panel w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
       <div class="bg-white rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl w-full max-w-full mx-auto overflow-visible">
         <div class="mb-2">
           <div class="flex justify-between items-center mb-1">
@@ -1536,7 +1558,7 @@
     </div>
     
     <!-- Jogo da Forca (aparece à esquerda quando selecionado) -->
-    <div id="force-game-container" class="hidden w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
+    <div id="force-game-container" class="hidden draggable-panel w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
       <div class="bg-white rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl w-full max-w-full mx-auto overflow-visible">
         <div class="mb-2">
           <div class="flex justify-between items-center mb-1">
@@ -1655,7 +1677,7 @@
     </div>
     
     <!-- Jogo da Palavra Secreta (aparece à esquerda quando selecionado) -->
-    <div id="word-game-container" class="hidden w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
+    <div id="word-game-container" class="hidden draggable-panel w-full lg:w-96 xl:w-[420px] flex-shrink-0 lg:self-center">
       <div class="bg-white rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl w-full max-w-full mx-auto overflow-visible">
         <!-- Modo Single Player -->
         <div id="word-single-player" class="hidden">
@@ -1754,7 +1776,7 @@
     </div>
     
     <!-- Adicionado um wrapper para conter a roleta e a seta -->
-    <div class="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96 flex-shrink-0 lg:self-center mx-auto">
+    <div id="wheel-draggable" class="draggable-panel relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 xl:w-[28rem] xl:h-[28rem] flex-shrink-0 self-end lg:self-center lg:ml-auto">
       <!-- Seta/Ponteiro -->
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20" style="margin-top: -60px;"> <!-- Ajuste para apontar para cima -->
         <svg width="120" height="120" viewBox="0 0 120 120" class="drop-shadow-2xl">
@@ -2114,6 +2136,7 @@ Onde gostaria de ir?`;
       // CORREÇÃO: Esta referência estava a falhar porque o elemento não existia
       const wheelWrapper = document.getElementById('wheel-wrapper'); 
       const wheelSectors = document.getElementById('wheel-sectors');
+      const wheelDraggable = document.getElementById('wheel-draggable');
       
       const spinBtn = document.getElementById('spin-btn');
       
@@ -2127,6 +2150,128 @@ Onde gostaria de ir?`;
       const modalWrongBtn = document.getElementById('modal-wrong-btn');
       // CORREÇÃO: Adicionada a referência para o novo 'id'
       const modalContentDiv = document.getElementById('modal-content-div');
+
+      const makeDraggable = (element, storageKey, options = {}) => {
+        if (!element) {
+          return;
+        }
+
+        const {
+          ignoreSelectors = ['button', 'input', 'textarea', 'select', 'label', 'a', '[data-drag-ignore]'],
+          preventDefault = true,
+        } = options;
+
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        let translateX = 0;
+        let translateY = 0;
+
+        const shouldIgnore = (target) => {
+          if (!target) {
+            return false;
+          }
+          return ignoreSelectors.some((selector) => {
+            try {
+              return target.closest(selector);
+            } catch {
+              return false;
+            }
+          });
+        };
+
+        const loadPosition = () => {
+          if (!storageKey) {
+            return;
+          }
+          try {
+            const stored = localStorage.getItem(storageKey);
+            if (!stored) {
+              return;
+            }
+            const parsed = JSON.parse(stored);
+            if (
+              typeof parsed === 'object' &&
+              parsed !== null &&
+              Number.isFinite(parsed.x) &&
+              Number.isFinite(parsed.y)
+            ) {
+              translateX = parsed.x;
+              translateY = parsed.y;
+            }
+          } catch (error) {
+            console.warn(`Não foi possível carregar a posição de ${storageKey}.`, error);
+          }
+        };
+
+        const savePosition = () => {
+          if (!storageKey) {
+            return;
+          }
+          try {
+            localStorage.setItem(storageKey, JSON.stringify({ x: translateX, y: translateY }));
+          } catch (error) {
+            console.warn(`Não foi possível salvar a posição de ${storageKey}.`, error);
+          }
+        };
+
+        const updatePosition = () => {
+          element.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        };
+
+        loadPosition();
+        updatePosition();
+
+        element.addEventListener('pointerdown', (event) => {
+          if (shouldIgnore(event.target)) {
+            return;
+          }
+
+          isDragging = true;
+          dragOffsetX = event.clientX - translateX;
+          dragOffsetY = event.clientY - translateY;
+          element.classList.add('dragging');
+          try {
+            element.setPointerCapture(event.pointerId);
+          } catch {
+            // Ignora se o ponteiro não puder ser capturado
+          }
+          if (preventDefault) {
+            event.preventDefault();
+          }
+        });
+
+        element.addEventListener('pointermove', (event) => {
+          if (!isDragging) {
+            return;
+          }
+
+          translateX = event.clientX - dragOffsetX;
+          translateY = event.clientY - dragOffsetY;
+          updatePosition();
+        });
+
+        const stopDrag = (event) => {
+          if (!isDragging) {
+            return;
+          }
+
+          isDragging = false;
+          element.classList.remove('dragging');
+          savePosition();
+
+          try {
+            if (element.hasPointerCapture(event.pointerId)) {
+              element.releasePointerCapture(event.pointerId);
+            }
+          } catch {
+            // Ignora se não houver captura
+          }
+        };
+
+        element.addEventListener('pointerup', stopDrag);
+        element.addEventListener('pointercancel', stopDrag);
+      };
 
       // Referências dos Jogos
       const raceGameBtn = document.getElementById('race-game-btn');
@@ -2145,6 +2290,11 @@ Onde gostaria de ir?`;
       const forceError2 = document.getElementById('force-error-2');
       const forceErrorCount1Display = document.getElementById('force-error-count-1');
       const forceErrorCount2Display = document.getElementById('force-error-count-2');
+
+      makeDraggable(wheelDraggable, 'learnland-wheel-position');
+      makeDraggable(raceGameContainer, 'learnland-race-position');
+      makeDraggable(forceGameContainer, 'learnland-force-position');
+      makeDraggable(wordGameContainer, 'learnland-word-position');
       const raceCar = document.getElementById('race-car-1'); // Carro 1 (ou único no modo race)
       const raceCar1 = document.getElementById('race-car-1'); // Jogador 1
       const raceCar2 = document.getElementById('race-car-2'); // Jogador 2
