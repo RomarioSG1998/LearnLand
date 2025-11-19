@@ -2541,7 +2541,7 @@ Onde gostaria de ir?`;
         const modal = document.createElement('div');
         modal.className = 'custom-modal';
         modal.innerHTML = `
-          <div class="custom-modal-content custom-modal-content-large" style="max-width: 800px;">
+          <div class="custom-modal-content custom-modal-content-large pairs-config-modal" style="max-width: 800px;">
               <div class="text-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-800 mb-2">🎯 Configurar Frases Pares</h3>
                 <p class="text-gray-600">Adicione frases e seus respectivos pares</p>
@@ -2914,115 +2914,32 @@ Onde gostaria de ir?`;
         board.setAttribute('role', 'grid');
 
         const viewportWidth = window.innerWidth;
-        const sizePreset = viewportWidth < 640
-          ? { horizontal: { width: 120, height: 60 }, vertical: { width: 80, height: 140 } }
+        const layoutPreset = viewportWidth < 640
+          ? { minWidth: 120, minHeight: 90, gap: 10, padding: '0.65rem 0.85rem' }
           : viewportWidth < 1024
-            ? { horizontal: { width: 150, height: 70 }, vertical: { width: 95, height: 170 } }
-            : { horizontal: { width: 180, height: 80 }, vertical: { width: 110, height: 190 } };
+            ? { minWidth: 150, minHeight: 110, gap: 14, padding: '0.75rem 1rem' }
+            : { minWidth: 190, minHeight: 130, gap: 18, padding: '0.85rem 1.25rem' };
 
-        const randomBetween = (min, max) => Math.random() * (max - min) + min;
+        board.style.setProperty('--pairs-card-min-width', `${layoutPreset.minWidth}px`);
+        board.style.setProperty('--pairs-card-min-height', `${layoutPreset.minHeight}px`);
+        board.style.setProperty('--pairs-card-gap', `${layoutPreset.gap}px`);
+        board.style.gridTemplateColumns = `repeat(auto-fit, minmax(${layoutPreset.minWidth}px, 1fr))`;
+        board.style.gridAutoRows = `minmax(${layoutPreset.minHeight}px, 1fr)`;
 
-        const fallbackWidth = 420;
-        const fallbackHeight = 420;
-        const boardWidth = Math.max(pairsPhrasesDisplay.clientWidth || pairsPhrasesDisplay.offsetWidth || 0, fallbackWidth);
-        const boardHeight = Math.max(pairsPhrasesDisplay.clientHeight || pairsPhrasesDisplay.offsetHeight || 0, fallbackHeight);
-        const boardPadding = viewportWidth < 640 ? 10 : 18;
-        const innerWidth = Math.max(boardWidth - boardPadding * 2, 160);
-        const innerHeight = Math.max(boardHeight - boardPadding * 2, 200);
-
-        const sidesPattern = ['left', 'right', 'top', 'bottom', 'left', 'right'];
-        const sidesPool = [];
-        while (sidesPool.length < numActiveCards) {
-          sidesPool.push(...sidesPattern);
-        }
-        const cardSides = shuffleArray(sidesPool).slice(0, numActiveCards);
-
-        const allowedSides = ['left', 'right', 'top', 'bottom'];
-        const normalizeSide = (side) => allowedSides.includes(side) ? side : 'left';
-
-        const sideCounts = {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0
+        const getDynamicFontSize = (textLength) => {
+          if (textLength > 80) return 0.9;
+          if (textLength > 45) return 0.98;
+          if (textLength > 25) return 1.05;
+          return 1.15;
         };
 
-        cardSides.forEach((side) => {
-          const normalized = normalizeSide(side);
-          sideCounts[normalized] += 1;
-        });
-
-        const sideProgress = {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0
-        };
-
-        const computeScaleFactor = (dimension, slotSpace) => {
-          if (dimension <= 0 || slotSpace <= 0) return 1;
-          const margin = Math.min(slotSpace * 0.25, 14);
-          const targetSpace = Math.max(slotSpace - margin, slotSpace * 0.7);
-          const upperBound = Math.min(targetSpace, slotSpace - 2);
-          const lowerBound = slotSpace * 0.4;
-          const effectiveSpace = Math.max(upperBound, lowerBound);
-          return Math.min(1, effectiveSpace / dimension);
-        };
-
-        const getPositionForSide = (side, cardWidth, cardHeight) => {
-          const normalized = normalizeSide(side);
-          const total = Math.max(sideCounts[normalized], 1);
-          const index = sideProgress[normalized];
-          const isVerticalSide = normalized === 'left' || normalized === 'right';
-          const slot = (isVerticalSide ? innerHeight : innerWidth) / total;
-          const jitterRange = slot * 0.2;
-          const lateralOffset = Math.min(innerWidth * 0.08, 32);
-          const verticalOffset = Math.min(innerHeight * 0.08, 28);
-          let top = boardPadding;
-          let left = boardPadding;
-
-          if (isVerticalSide) {
-            const centerY = boardPadding + slot * (index + 0.5);
-            const jitterY = clampNumber(centerY - cardHeight / 2 + randomBetween(-jitterRange, jitterRange),
-              boardPadding,
-              boardHeight - boardPadding - cardHeight);
-            top = jitterY;
-
-            if (normalized === 'left') {
-              left = boardPadding + randomBetween(0, lateralOffset);
-            } else {
-              left = boardWidth - boardPadding - cardWidth - randomBetween(0, lateralOffset);
-            }
-          } else {
-            const centerX = boardPadding + slot * (index + 0.5);
-            const jitterX = clampNumber(centerX - cardWidth / 2 + randomBetween(-jitterRange, jitterRange),
-              boardPadding,
-              boardWidth - boardPadding - cardWidth);
-            left = jitterX;
-
-            if (normalized === 'top') {
-              top = boardPadding + randomBetween(-verticalOffset * 0.25, verticalOffset * 0.6);
-            } else {
-              top = boardHeight - boardPadding - cardHeight - randomBetween(-verticalOffset * 0.6, verticalOffset * 0.25);
-              top = clampNumber(top, boardPadding, boardHeight - boardPadding - cardHeight);
-            }
-          }
-
-          sideProgress[normalized] = index + 1;
-          return { left, top };
-        };
-
-        activeCards.forEach((card, index) => {
-          const isMatched = matchedPairs.has(card.pairId);
+        activeCards.forEach((card) => {
           const isPendingRemoval = pairsPendingRemoval.has(card.pairId);
           const orientation = Math.random() > 0.5 ? 'vertical' : 'horizontal';
-          const side = normalizeSide(cardSides[index]);
-          const isVerticalSide = side === 'left' || side === 'right';
           const cardElement = document.createElement('div');
           cardElement.className = 'pairs-chaotic-card';
           cardElement.classList.add(`orientation-${orientation}`);
           cardElement.setAttribute('data-card-id', card.id);
-          cardElement.setAttribute('data-side', side);
           cardElement.setAttribute('role', 'button');
           cardElement.setAttribute('tabindex', '0');
 
@@ -3035,41 +2952,16 @@ Onde gostaria de ir?`;
             cardElement.style.pointerEvents = 'none';
           }
 
-          let { width, height } = sizePreset[orientation];
-          const slotSpace = isVerticalSide
-            ? innerHeight / Math.max(sideCounts[side], 1)
-            : innerWidth / Math.max(sideCounts[side], 1);
-          const primaryDimension = isVerticalSide ? height : width;
-          const scaleFactor = computeScaleFactor(primaryDimension, slotSpace);
-          const effectiveWidth = width * scaleFactor;
-          const effectiveHeight = height * scaleFactor;
+          cardElement.style.minHeight = `${layoutPreset.minHeight}px`;
+          cardElement.style.padding = layoutPreset.padding;
 
-          cardElement.style.width = `${width}px`;
-          cardElement.style.minHeight = `${height}px`;
-
-          const tilt = randomBetween(-8, 8);
-          let transformValue = `scale(${scaleFactor}) rotate(${tilt}deg)`;
-          if (isSelected) {
-            transformValue += ' scale(1.05)';
-          }
-          cardElement.style.transform = transformValue;
-          cardElement.style.zIndex = isSelected ? 30 : 5 + Math.floor(Math.random() * 7);
-
-          const { left, top } = getPositionForSide(side, effectiveWidth, effectiveHeight);
-          const layoutLeft = left + (effectiveWidth / 2) - (width / 2);
-          const layoutTop = top + (effectiveHeight / 2) - (height / 2);
-          cardElement.style.left = `${layoutLeft}px`;
-          cardElement.style.top = `${layoutTop}px`;
+          const textLength = (card.content || '').length;
+          const dynamicFontSize = getDynamicFontSize(textLength);
+          cardElement.style.setProperty('--pairs-card-font-size', `${dynamicFontSize}rem`);
 
           const cardContent = document.createElement('div');
           cardContent.className = 'pairs-card-text';
           cardContent.textContent = card.content;
-          cardContent.style.display = 'inline-flex';
-          cardContent.style.alignItems = 'center';
-          cardContent.style.justifyContent = 'center';
-          cardContent.style.width = '100%';
-          cardContent.style.transform = `rotate(${(-tilt).toFixed(2)}deg)`;
-          cardContent.style.transformOrigin = 'center';
           cardElement.appendChild(cardContent);
 
           cardElement.addEventListener('click', () => handleCardClick(card.id));
